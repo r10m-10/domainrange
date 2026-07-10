@@ -1,0 +1,80 @@
+exp = (2+3)*4+1
+tokens = ['(', '2', '+', '3', ')', '*', '4', '+', '1']
+expected result = ('+', ('*', ('+', 2, 3), 4), 1)
+
+----------MAIN DOWN PASS----------
+1. tokens, pos=0 passed to parse_add -> parse_mul -> parse_atom
+2. parse_atom -> token=tokens[pos] => token='('
+3. parse_atom -> pos+=1; left, pos = parse_add(tokens, pos) => pos=1
+
+----------SUB-OP (PARENTHESIS) DOWN PASS----------
+1. tokens, pos=1 passed to parse_add -> parse_mul -> parse_atom
+2. parse_atom -> token=tokens[pos] => token='2'
+3. parse_atom -> pos+=1; left = token; return (left, pos) => (2, 2)
+
+----------SUB-OP (PARENTHESIS) UPWARD PASS----------
+1. parse_mul -> left, pos = parse_atom(tokens, pos) => left=2, pos=2
+2. parse_mul -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '*/'- False
+3. parse_mul -> return (left, pos) => (2,2)
+4. parse_add -> left, pos = parse_mul(tokens, pos) => left=2, pos=2
+5. parse_add -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '+-'- True
+6. parse_add -> token=tokens[pos]; pos+=1; right, pos = parse_mul(tokens, pos) => pos=3
+
+----------SUB-SUB-OP (ITER-1) DOWN PASS----------
+1. tokens, pos=3 passed to parse_mul -> parse_atom
+2. parse_atom -> token=tokens[pos] => token='3'
+3. parse_atom -> pos+=1; left = token; return (left, pos) => (3, 4)
+
+----------SUB-SUB-OP (ITER-1) UPWARD PASS----------
+1. parse_mul -> left, pos = parse_atom(tokens, pos) => left=3, pos=4
+2. parse_mul -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '*/'- False
+3. parse_mul -> return (left, pos) => (3,4)
+4. complete as result of parse_mul is passsed straight to SUB-OP (PARENTHESIS) UPWARD PASS
+
+----------SUB-OP (PARENTHESIS) UPWARD PASS CONTINUE----------
+7. parse_add -> right = 3 and pos = 4
+8. parse_add -> left = (token, left, right) => ('+', 2, 3)
+9. Next iteration
+10. parse_add -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '+-'- False
+11. parse_add -> return (left, pos) => (('+', 2, 3), 4)
+
+----------MAIN DOWN PASS CONTINUE----------
+4. parse_atom -> left = ('+', 2, 3), pos = 4; pos+=1; return (left, pos) => (('+', 2, 3), 5)
+
+----------MAIN UPWARD PASS----------
+1. parse_mul -> left, pos = parse_atom(tokens, pos) => left=('+', 2, 3), pos=5
+2. parse_mul -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '*/'- True
+3. parse_mul -> token=tokens[pos]; pos+=1; right = parse_atom(tokens, pos) => pos = 6
+
+----------SUB-OP (ITER-1 "*") DOWN PASS----------
+1. pass into parse_atom -> tokens, pos=6
+2. parse_atom -> token=tokens[pos] => token='4'
+3. parse_atom -> pos+=1; left = token; return (left, pos) => (4, 7)
+4. complete as result of parse_atom is passsed straight to MAIN UPWARD PASS
+
+----------MAIN UPWARD PASS CONTINUE----------
+4. parse_mul -> right = 4, pos = 7; make node
+5. parse_mul -> left = (token, left, right) => ('*', ('+', 2, 3), 4)
+6. parse_mul -> return (left, pos)
+7. parse_add -> left, pos = parse_mul(tokens, pos) => left=('*', ('+', 2, 3), 4), pos=7
+8. parse_add -> while loop conditions: 1. pos < len(tokens)- True ; 2. tokens[pos] in '+-'- True
+9. parse_add -> token=tokens[pos]; pos+=1; right, pos = parse_mul(tokens, pos) => pos=8
+
+----------SUB-OP (ITER-1 "+") DOWN PASS----------
+1. pass tokens, pos=8 to parse_mul -> parse_atom
+2. parse_atom -> token=tokens[pos] => token=1
+3. parse_atom -> pos+=1; left = token; return (left, pos) => (1, 9)
+
+----------SUB-OP (ITER-1 "+") UPWARD PASS----------
+1. parse_mul -> left, pos = parse_atom(tokens, pos) => left=1, pos=9
+2. parse_mul -> while loop conditions: 1. pos < len(tokens)- False ; 2. tokens[pos] in '*/'- False
+3. parse_mul -> return (left, pos) => (1,9)
+4. complete as result of parse_mul is passsed straight to MAIN UPWARD PASS
+
+----------MAIN UPWARD PASS CONTINUE----------
+10. parse_add -> right = 1, pos = 9; make node
+11. parse_add -> left = (token, left, right) => ('+', ('*', ('+', 2, 3), 4), 1)
+12. next iteration
+13. parse_add -> while loop conditions: 1. pos < len(tokens)- False ; 2. tokens[pos] in '+-'- False
+14. parse_add -> return (left, pos) => (('+', ('*', ('+', 2, 3), 4), 1), 9)
+15. Parsing complete

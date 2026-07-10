@@ -1,0 +1,66 @@
+IMPORTANT: OUTDATED BLUEPRINT
+
+exp = 2+3*4
+tokens = ['2', '+', '3', '*', '4']
+expected result = ('+', 2, ('*', 3, 4))
+
+So here is how i think the tree would be made:-
+
+----------MAIN DOWN PASS----------
+1. we pass tokens and pos=0 to parse_add(tokens, 0)
+2. Inside parse_add, it send the tokens and pos = 0 to parse_mul(tokens, 0)
+3. Then parse_mul send tokens and pos=0 straight to parse_atom(tokens, 0). Basically we send all the stuff straight down to parse_atom without checking anything in the down pass.
+4. now in parse_atom, it takes tokens and first reads the token at the given position: token = tokens[pos]
+5. now parse_atom uses a if-elif loop for specific conditions and the one that becomes true is token.isdigit()
+6. in this condition, the token itself is returned with the pos increased by 1 i.e. return (token, 1)signifying that the token 0 has been handled.
+
+----------MAIN UPWARD PASS----------
+1. parse_mul now receives the result of the function parse_atom as (token, 1) which it would unpack as child, pos = parse_atom(tokens, pos) making the child=2 (as token = 2) and pos=1
+2. now parse_mul does token = tokens[pos] with pos as the newly received pos from the operation from parse_atom() and checks whether the token at that pos is one of its required tokens i.e. '*' or '/'
+3. if the token is one of its, pos increases by 1 and it makes a new node: node = (token, child, parse_atom(tokens, pos))
+4. if token is not one of its, it returns the same input it got from parse_atom to parse_add 
+5. now parse_add receives the result of the function parse_mul as (token, 1) which it would unpack as: child, pos = parse_mul(tokens, pos) making the child=2 (as token = 2) and pos=1
+6. now parse_add does token = tokens[pos] with pos as the newly received pos from the operation from parse_mul() and checks whether the token at that pos is one of its required tokens i.e. '+' or '-'
+7. if the token is one of its, pos increases by 1 and it makes a new node: node = (token, child, parse_mul(tokens, pos))
+8. in this case token='+' so the situation will become true so the new pos will now become 2.
+9. now we do r_child, pos = parse_mul(tokens, pos) where pos=2
+10. now the recursion starts as we are again calling for parse_mul() with a new pos so the down pass starts again but this time it is for the right child of the add node.
+11. NEEDS TO BE COMPLETED AFTER ALL NESTED FUNCTIONS
+
+----------NEST-1 ('+' NODE) DOWN PASS-----------
+1. parse_mul receives tokens and pos=2, it sends that straight down to parse_atom(tokens, pos=2)
+2. parse_atom does token=tokens[pos] and in this case token=3
+3. token.isdigit() becomes true so parse_atom increses the pos by 1 and returns (token, pos) which filled in looks like (3, 3)
+
+----------NEST-1 ('+' NODE) UPWARD PASS----------
+1. parse_mul unpacks the result as child, pos = parse_atom(tokens, pos) where child=3 and pos=3
+2. now parse_mul does token=tokens[pos] such that token='*' which is one of its required tokens so pos+=1 i.e. now pos=4.
+3. now we do r_child, pos = parse_mul(tokens, pos) where pos=4
+4. thus we now go indo another level deeper
+5. NEEDS TO BE COMPLETED AFTER NEST-2 FUNCTIONS
+
+----------NEST-2 ('*' NODE) DOWN PASS----------
+1. parse_atom does token=tokens[pos] and in this case token=4
+2. token.isdigit() becomes true so parse_atom increses the pos by 1 and returns (token, pos) which filled in looks like (4, 5)
+
+----------NEST-2 ('*' NODE) UPWARD PASS----------
+1. parse_mul unpacks the result as child, pos = parse_atom(tokens, pos) where child=4 and pos=5
+2. parse_mul does token=tokens[pos] such that token='4' which is not one of its required tokens so it simply returns the output from parse_atom.
+3. parse_add unpacks the result as child, pos = parse_mul(tokens, pos) where child=4 and pos=4
+4. now parse_add does token=tokens[pos] such that token='4' which is not one of its required tokens so it simply returns the output from parse_mul.
+5. as parse_add is the base function so the thing it returns is the definite value so NEST-2 is complete with the output as (4,4). now we move up one level back, and reach the NEST-1 UPWARD PASS to complete it
+
+----------NEST-1 ('+' NODE) UPWARD PASS CONTINUE----------
+6. now that we have received the result of r_child, pos = parse_mul(tokens, pos) as r_child=4 and pos=4 we will form the node.
+7. the node formed will be: node=(token, child, r_child) which filled in looks like ('*', 3, 4)
+8. now this node is returned to parse_add as (node, pos) with node=('*', 3, 4) and pos=4
+9. parse_add unpacks the result as child, pos = parse_mul(tokens, pos) where child=('*', 3, 4) and pos=4
+10. now parse_add does token=tokens[pos] such that token='4' which is not one of its required tokens so it simply returns the output from parse_mul.
+11. as parse_add is the base function so the thing it returns is the definite value so NEST-1 is complete with the output as (('*', 3, 4),4). now we move up one level back, and reach the main UPWARD PASS to complete it.
+
+----------MAIN UPWARD PASS CONTINUE----------
+12. now that we have received the result of r_child, pos = parse_mul(tokens, pos) as r_child=('*', 3, 4) and pos=4 we will form the node.
+13. the node formed will be: node=(token, child, r_child) which filled in looks like ('+', 2, ('*', 3, 4))
+14. now this node is simply returned as the final output of the parser.
+
+----------PARSING COMPLETE WITH OUTPUT= ('+', 2, ('*', 3, 4))----------

@@ -1,0 +1,68 @@
+exp = 2+3+4+5
+tokens = ['2', '+', '3', '+', '4', '+', '5']
+expected result = ('+', ('+', ('+', 2, 3), 4), 5)
+
+----------MAIN DOWN PASS----------
+1. pass tokens and pos=0 to parse_add -> parse_mul -> parse_atom
+2. parse_atom does token=tokens[pos] => token='2'
+3. parse_atom does pos+=1 and returns (token, pos) => (2, 1)
+
+----------MAIN UPWARD PASS----------
+1. in parse_mul -> left, pos = parse_atom(tokens, pos) => left=2, pos=1
+2. parse_mul checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '*/'? False
+3. does not enter while loop and returns (left, pos)
+4. in parse_add -> left, pos = parse_mul(tokens, pos) => left=2, pos=1
+5. parse_add checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '+-'? True
+6. enters while loop -> token=tokens[pos]; pos+=1; right, pos = parse_mul(tokens, pos) where pos=2
+
+----------SUB-OP (ITER-1) DOWN PASS-----------
+1. tokens, pos=2 passed from parse_mul -> parse_atom
+2. parse_atom does token=tokens[pos] => token='3'
+3. parse_atom does pos+=1 and returns (token, pos) => (3, 3)
+
+----------SUB-OP (ITER-1) UPWARD PASS----------
+1. in parse_mul -> left, pos = parse_atom(tokens, pos) => left=3, pos=3
+2. parse_mul checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '*/'? False
+3. does not enter while loop and returns (left, pos) => (3,3)
+
+----------MAIN UPWARD PASS CONTINUE----------
+7. in parse_add -> right, pos = parse_mul(tokens, pos) => right=3, pos=3
+8. make node -> left = (token, left, right) => ('+', 2, 3)
+9. Next iteration
+10. parse_add checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '+-'? True
+11. enters while loop -> token=tokens[pos]; pos+=1; right, pos = parse_mul(tokens, pos) where pos=4
+
+----------SUB-OP (ITER-2) DOWN PASS-----------
+1. tokens, pos=4 passed from parse_mul -> parse_atom
+2. parse_atom does token=tokens[pos] => token='4'
+3. parse_atom does pos+=1 and returns (token, pos) => (4, 5)
+
+----------SUB-OP (ITER-2) UPWARD PASS----------
+1. in parse_mul -> left, pos = parse_atom(tokens, pos) => left=4, pos=5
+2. parse_mul checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '*/'? False
+3. does not enter while loop and returns (left, pos) => (4,5)
+
+----------MAIN UPWARD PASS CONTINUE----------
+12. in parse_add -> right, pos = parse_mul(tokens, pos) => right=4, pos=5
+13. make node -> left = (token, left, right) => ('+', ('+', 2, 3), 4)
+14. Next iteration
+15. parse_add checks while loop conditions: 1. pos < len(token)? True; 2. tokens[pos] in '+-'? True
+16. enters while loop -> token=tokens[pos]; pos+=1; right, pos = parse_mul(tokens, pos) where pos=6
+
+----------SUB-OP (ITER-3) DOWN PASS-----------
+1. tokens, pos=6 passed from parse_mul -> parse_atom
+2. parse_atom does token=tokens[pos] => token='5'
+3. parse_atom does pos+=1 and returns (token, pos) => (5, 7)
+
+----------SUB-OP (ITER-3) UPWARD PASS----------
+1. in parse_mul -> left, pos = parse_atom(tokens, pos) => left=5, pos=7
+2. parse_mul checks while loop conditions: 1. pos < len(token)? False; 2. tokens[pos] in '*/'? False
+3. does not enter while loop and returns (left, pos) => (5,7)
+
+----------MAIN UPWARD PASS CONTINUE----------
+17. in parse_add -> right, pos = parse_mul(tokens, pos) => right=5, pos=7
+18. make node -> left = (token, left, right) => ('+', ('+', ('+', 2, 3), 4), 5)
+19. Next iteration
+20. parse_add checks while loop conditions: 1. pos < len(token)? False; 2. tokens[pos] in '+-'? False
+21. does not enter while loop and returns (left, pos) => ((('+', ('+', ('+', 2, 3), 4), 5)), 7)
+22. Parsing complete
