@@ -1,8 +1,3 @@
-from tokenizer import tokenizer
-
-exp = str(input("Enter expression: "))
-tokens = tokenizer(exp)
-
 def parse_add(tokens, pos):
     left, pos = parse_mul(tokens, pos)
 
@@ -15,15 +10,27 @@ def parse_add(tokens, pos):
         return (left, pos)
 
 def parse_mul(tokens, pos):
-    left, pos = parse_atom(tokens, pos)
+    left, pos = parse_pow(tokens, pos)
 
     while pos < len(tokens) and tokens[pos] in '*/':
         token = tokens[pos]
         pos+=1
-        right, pos = parse_atom(tokens, pos)
+        right, pos = parse_pow(tokens, pos)
         left = (token, left, right)
     else:
         return (left, pos)
+
+def parse_pow(tokens, pos):
+    left, pos = parse_atom(tokens, pos)
+
+    while pos < len(tokens) and tokens[pos] == "^":
+        token = tokens[pos]
+        pos+=1
+        right, pos = parse_pow(tokens, pos)
+        left = (token, left, right)
+    else:
+        return (left, pos)
+
 
 def parse_atom(tokens, pos):
     token = tokens[pos]
@@ -33,7 +40,7 @@ def parse_atom(tokens, pos):
         pos+=1
         left = (token, left)
         return (left, pos)    
-    elif token.isdigit() or token.isalpha():
+    elif token.isdigit() or token.isalpha() or '.' in token or '-' in token:
         pos+=1
         return (token, pos)
     elif token == '(':
@@ -41,6 +48,3 @@ def parse_atom(tokens, pos):
         child, pos = parse_add(tokens, pos)
         pos+= 1
         return (child, pos)
-
-
-print (parse_add(tokens, 0)[0])

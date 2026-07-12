@@ -1,5 +1,3 @@
-exp = "|-3|"
-
 def tokenizer(exp):
     exp = exp.lower().replace(" ", "")
     tokens = []
@@ -9,7 +7,7 @@ def tokenizer(exp):
         if exp[i] in '+-*/^()|{[]}':
             if exp[i] == "-":
                 if i == 0 or exp[i-1] in "[{|(+-*/^":
-                    if exp[i+1].isdigit():
+                    if exp[i+1].isdigit() or exp[i+1] == '.':
                         num.append(exp[i])
                     elif exp[i+1].isalpha():
                         word.append(exp[i])
@@ -26,7 +24,7 @@ def tokenizer(exp):
                 else:
                     tokens.append(exp[i])
             elif exp[i-1] == "-":
-                if exp[i+1].isdigit():
+                if exp[i+1].isdigit() or exp[i+1] == '.':
                     num.append(exp[i])
                 else:
                     num.append(exp[i])
@@ -40,8 +38,12 @@ def tokenizer(exp):
                 num.append(exp[i])
                 tokens.append("".join(num))
                 num.clear()
+                if exp[i+1].isalpha() or exp[i+1] == '(':
+                    tokens.append('*')
             else:
                 tokens.append(exp[i])
+                if exp[i+1].isalpha() or exp[i+1] == '(':
+                    tokens.append('*')
         elif exp[i].isalpha():
             if i == len(exp)-1:
                 if exp[i-1].isalpha() or exp[i-1] == "-":
@@ -51,7 +53,7 @@ def tokenizer(exp):
                 else:
                     tokens.append(exp[i])
             elif exp[i-1] == "-":
-                if exp[i+1].isdigit():
+                if exp[i+1].isalpha():
                     word.append(exp[i])
                 else:
                     word.append(exp[i])
