@@ -1,4 +1,4 @@
-def parse_add(tokens, pos):
+def parse_add(tokens, pos=0):
     left, pos = parse_mul(tokens, pos)
 
     while pos < len(tokens) and tokens[pos] in '+-':
@@ -43,8 +43,14 @@ def parse_atom(tokens, pos):
     elif token.isdigit() or token.isalpha() or '.' in token or '-' in token:
         pos+=1
         return (token, pos)
-    elif token == '(':
+    elif token in '(|{[':
         pos+=1
-        child, pos = parse_add(tokens, pos)
+        left, pos = parse_add(tokens, pos)
         pos+= 1
-        return (child, pos)
+        if token=='|':
+            left = ('abs', left)
+        elif token=='{':
+            left = ('frac', left)
+        elif token=='[':
+            left = ('gif', left)
+        return (left, pos)

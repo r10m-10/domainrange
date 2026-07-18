@@ -6,8 +6,6 @@ x_spacing = 90
 y_spacing = 110
 margin = 50
 
-exp = "x+y*x"
-
 def assign_positions(node, depth, id_count, leaf_count, tree):
     if type(node) == str:
         str_id = id_count
@@ -45,7 +43,7 @@ def draw_nodes(tree):
     nodes = []
     for i in tree.values():
         x, y = get_pixel_coords(i['x'], i['depth'])
-        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="white" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" dominant-baseline="middle">{i['label']}</text>'
+        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="skyblue" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" dominant-baseline="middle">{i['label']}</text>'
         nodes.append(svg)
     return " ".join(nodes)
 
@@ -72,5 +70,3 @@ def render_expression(exp):
     with open("tree.svg", 'w') as f:
         f.write(svg)
     return svg
-
-render_expression(exp)
