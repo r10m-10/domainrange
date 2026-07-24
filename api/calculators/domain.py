@@ -1,7 +1,6 @@
 import math
-from tokenizer import tokenizer
-from parser import parse_add
-from tree import render_expression
+from ..ast.tokenizer import tokenize
+from ..ast.parser import parse_add
 
 binary_ops = {'+': lambda a, b: a + b, '-': lambda a, b: a - b, '*': lambda a, b: a * b, '/': lambda a, b: a / b, '^': lambda a, b: a**b}
 unary_ops = {
@@ -246,7 +245,10 @@ def solve_constraints(constraints):
             rhs = 0
             critical_points = get_critical_points(subtree, -20, 20, 0.1)
             interval = test_domain_intervals(subtree, inequality, rhs, critical_points)
-            combined_intervals.extend(interval)
+            if len(interval)>1:
+                combined_intervals.append(interval)
+            else:
+                combined_intervals.extend(interval)
         elif type(i)==list:
             constrnt_1, constrnt_2 = i[0], i[1]
             subtree_1, inequality_1, rhs_1 = constrnt_1
@@ -414,6 +416,10 @@ def normalize_domain(domain):
     else:
         for i in domain:
             if type(i) == list:
+                if len(domain) == 1 and len(i) == 2:
+                    x = i[0][1]
+                    if i == [(-math.inf, x, False, False), (x, math.inf, False, False)]:
+                        return 'R-{'+str(x)+'}'
                 for j in i:
                     lo, hi, lo_incl, hi_incl = convert_incl(j)
                     if lo == hi:
@@ -439,7 +445,7 @@ def normalize_domain(domain):
     return ' '.join(pretty)
 
 def find_domain(exp):
-    tokens = tokenizer(exp)
+    tokens = tokenize(exp)
     node = parse_add(tokens)[0]
     constraints = get_constraints(node)
     intervals = solve_constraints(constraints)

@@ -1,2 +1,2 @@
-tests/extra.py
-test.txt
+tests
+__pycache__

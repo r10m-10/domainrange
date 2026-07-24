@@ -1,4 +1,4 @@
-def tokenizer(exp):
+def tokenize(exp):
     exp = exp.lower().replace(" ", "")
     tokens = []
     num = []

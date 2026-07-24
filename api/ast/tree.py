@@ -1,5 +1,5 @@
-from tokenizer import tokenizer
-from parser import parse_add
+from .tokenizer import tokenize
+from .parser import parse_add
 
 radius = 25
 x_spacing = 90
@@ -61,7 +61,7 @@ def draw_lines(tree):
     return " ".join(lines)
 
 def render_expression(exp):
-    tokens = tokenizer(exp)
+    tokens = tokenize(exp)
     parsed = parse_add(tokens, 0)[0]
     tree = assign_positions(parsed, 0, 0, 0, {})[4]
     nodes = draw_nodes(tree)
