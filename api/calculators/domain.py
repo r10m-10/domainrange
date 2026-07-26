@@ -76,7 +76,7 @@ def get_constraints(node):
 
 def contains_var(node):
     if type(node) == str:
-        if node.isdigit() or '.' in node or node[0]=='-' and node[1].isdigit() or node[0]=='-' and node[1] =='.':
+        if node.isdigit() or '.' in node or (node[0]=='-' and node[1].isdigit()) or (node[0]=='-' and node[1] =='.'):
             return False
         else:
             return True

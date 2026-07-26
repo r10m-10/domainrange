@@ -9,8 +9,8 @@ def tokenize(exp):
                 if i == 0 or exp[i-1] in "[{|(+-*/^":
                     if exp[i+1].isdigit() or exp[i+1] == '.':
                         num.append(exp[i])
-                    elif exp[i+1].isalpha():
-                        word.append(exp[i])
+                    elif exp[i+1].isalpha() or exp[i+1] == '(':
+                        tokens.extend(['-1', '*'])
                 else:
                     tokens.append(exp[i])
             else:
