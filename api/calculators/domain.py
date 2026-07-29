@@ -2,7 +2,13 @@ import math
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
 
-binary_ops = {'+': lambda a, b: a + b, '-': lambda a, b: a - b, '*': lambda a, b: a * b, '/': lambda a, b: a / b, '^': lambda a, b: a**b}
+binary_ops = {
+    '+': lambda a, b: a + b, 
+    '-': lambda a, b: a - b, 
+    '*': lambda a, b: a * b, 
+    '/': lambda a, b: a / b, 
+    '^': lambda a, b: a**b
+}
 unary_ops = {
     'sqrt': math.sqrt,
     'log': math.log10,
@@ -21,7 +27,6 @@ unary_ops = {
     'arcsec': lambda v: math.acos(1 / v),
     'arccosec': lambda v: math.asin(1 / v),
 }
-
 comparison_ops = {
     '>':  lambda a, b: a > b,
     '>=': lambda a, b: a >= b,
@@ -30,7 +35,6 @@ comparison_ops = {
     '!=': lambda a, b: a != b,
     '==': lambda a, b: a == b,
 }
-
 inclusion_ops = {'True_l': '[', 'False_l': '(', 'True_r': ']', 'False_r': ')'}
 
 def get_constraints(node):
@@ -144,10 +148,7 @@ def get_critical_points(node, lo, hi, step):
     prev_val = None
 
     while x<= hi:
-        try:
-            val = evaluate_at(node, x)
-        except (ValueError, ZeroDivisionError):
-            val = None
+        val = safe_evaluate(node, x)
         
         if prev_val!=None and val!=None and prev_val*val < 0:
             critical_points.append(round(bisect(node, prev_x, x), 6))

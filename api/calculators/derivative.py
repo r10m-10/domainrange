@@ -1,119 +1,39 @@
+import math
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
 from .domain import contains_var
 
-def der_pow(term:str, var):
-    i = term.find('^')
-    o_pow = float(term[i+1:])
-    if o_pow.is_integer():
-        o_pow = int(o_pow)
-    n_pow = f"^{o_pow-1}"
-    if n_pow == '^1' or n_pow == '^1.0':
-        n_pow = ''
-    if term[:i-1] == '':
-        der = f"{o_pow}{var}{n_pow}"
-    else:
-        const = float(term[:i-1]) * o_pow
-        if const.is_integer():
-            const = int(const)
-        der = f"{const}{var}{n_pow}"
-    return der
-
-def der_linear(term:str):
-    if term.isdigit():
-        der = '0'
-    else:
-        cons = term[:len(term)-1]
-        if cons == '':
-            der = '1'
-        else:
-            der = cons
-    return der
-
-def der_exp(term:str, var):
-    if term[term.find('^')-1] == 'e':
-        der = f"e^{var}"
-    elif term[term.find('^')-1].isdigit():
-        const = term[term.find('^')-1]
-        der = f"{term}ln({const})"
-    return der
-
-def der_trig(term, var):
-    if 'sin' in term:
-        c = term[:term.find('s')]
-        der = f"{c}cos({var})"
-    elif 'cosec' in term:
-        c = term[:term.find('c')]
-        der = f"-{c}cosec({var})cot({var})"
-    elif 'cos' in term:
-        c = term[:term.find('c')]
-        der = f"-{c}sin({var})"
-    elif 'tan' in term:
-        c = term[:term.find('t')]
-        der = f"{c}(sec({var}))^2"
-    elif 'cot' in term:
-        c = term[:term.find('c')]
-        der = f"-{c}(cosec({var}))^2"
-    elif 'sec' in term:
-        c = term[:term.find('s')]
-        der = f"{c}sec({var})tan({var})"
-    return der
-
-def der_itrig(term, var):
-    c = term[:term.find('a')]
-    if 'arcsin' in term:
-        if c=='':
-            der = f"1/(1-{var}^2)^1/2"
-        else:
-            der = f"{c}/(1-{var}^2)^1/2"
-    elif 'arccosec' in term:
-        if c=='':
-            der = f"-1/(|{var}|({var}^2-1))"
-        else:
-            der = f"-{c}/(|{var}|({var}^2-1))"
-    elif 'arccos' in term:
-        if c=='':
-            der = f"-1/(1-{var}^2)^1/2"
-        else:
-            der = f"-{c}/(1-{var}^2)^1/2"
-    elif 'arctan' in term:
-        if c=='':
-            der = f"1/(1+{var}^2)"
-        else:
-            der = f"{c}/(1+{var}^2)"
-    elif 'arccot' in term:
-        if c=='':
-            der = f"-1/(1+{var}^2)"
-        else:
-            der = f"-{c}/(1+{var}^2)"
-    elif 'arcsec' in term:
-        if c=='':
-            der = f"1/(|{var}|({var}^2-1))"
-        else:
-            der = f"{c}/(|{var}|({var}^2-1))"
-    return der
-
-def der_log(term, var):
-    if 'ln' in term:
-        der = f"1/{var}"
-    else:
-        base = term[term.find('g')+1 : term.find('(')].strip()
-        if base == 'e':
-            der = f"1/{var}"
-        else:
-            der = f"1/({var}ln({base}))"
-    return der
-
-def der_varexp(u, v):
-    d = f"({v})*(ln({u}))"
-    der = differentiate(d)
-    return der
+binary_ops = {
+    '+': lambda a, b: a + b, 
+    '-': lambda a, b: a - b, 
+    '*': lambda a, b: a * b, 
+    '/': lambda a, b: a / b, 
+    '^': lambda a, b: a**b
+}
+unary_ops = {
+    'sqrt': math.sqrt,
+    'log': math.log10,
+    'ln': math.log,
+    'abs': math.fabs,
+    'frac': lambda v: v - math.floor(v),
+    'gif': math.floor,
+    'sin': math.sin,
+    'cos': math.cos,
+    'tan': math.tan,
+    'arcsin': math.asin,
+    'arccos': math.acos,
+    'arctan': math.atan,
+    'sec': lambda v: 1 / math.cos(v),
+    'cosec': lambda v: 1 / math.sin(v),
+    'arcsec': lambda v: math.acos(1 / v),
+    'arccosec': lambda v: math.asin(1 / v),
+}
 
 def differentiate(node):
     if type(node)==str:
         if node.isdigit() or '.' in node or (node[0] == '-' and node[1:].isdigit()) or (node[0]=='-' and node[1] =='.'):
             return '0'
-        elif node.isalpha() or (node[0] == '-' and node[1:].isalpha()):
+        elif node.isalpha():
             return '1'
     elif len(node)==3:
         op, left, right = node
@@ -130,9 +50,7 @@ def differentiate(node):
                 return ('*', ('^', left, right), ('+', ('*', differentiate(right), ('ln', left)), ('*', right, ('/', differentiate(left), left))))
     elif len(node)==2:
         op, child = node
-        if op == 'sqrt':
-            return ('/', '1', ('*', '2', ('sqrt', child)))
-        elif op == 'sin':
+        if op == 'sin':
             return ('*', ('cos', child), differentiate(child))
         elif op == 'cos':
             return ('*', ('*', '-1', ('sin', child)), differentiate(child))
@@ -144,3 +62,84 @@ def differentiate(node):
             return ('*', ('*', ('sec', child), ('tan', child)), differentiate(child))
         elif op == 'cot':
             return ('*', ('*', '-1', ('^', ('cosec', child), '2')), differentiate(child))
+        elif op == 'arcsin':
+            return ('*', ('/', '1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate(child))
+        elif op == 'arccos':
+            return ('*', ('/', '-1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate(child))
+        elif op == 'arctan':
+            return ('*', ('/', '1', ('+', '1', ('^', child, '2'))), differentiate(child))
+        elif op == 'arccosec':
+            return ('*', ('/', '-1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate(child))
+        elif op == 'arcsec':
+            return ('*', ('/', '1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate(child))
+        elif op == 'arccot':
+            return ('*', ('/', '-1', ('+', '1', ('^', child, '2'))), differentiate(child))
+        elif op == 'sqrt':
+            return ('/', '1', ('*', '2', ('sqrt', child)))
+        elif op == 'ln':
+            return ('*', ('/', '1', child), differentiate(child))
+        elif op == 'log':
+            return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate(child))
+
+def simplify(node):
+    if type(node) == str:
+        if node.isalpha():
+            return node
+        else:
+            return float(node)
+    elif len(node) == 3:
+        op, left, right = node
+        left = simplify(left)
+        right = simplify(right)
+        if type(left) == type(right) == float:
+            return binary_ops[op](left, right)
+        elif (type(left) == str or type(left) == tuple) and type(right) == float:
+            if math.modf(right)[0] == 0:
+                right = int(right)
+            if right == 1:
+                if op in '*/':
+                    return left
+                else:
+                    return (op, left, str(right))
+            elif right == 0:
+                if op == '*':
+                    return 0.0
+                elif op == '^':
+                    return 1.0
+                elif op in '+-':
+                    return left
+            else:
+                return (op, left, str(right))
+        elif type(left) == float and (type(right) == str or type(right) == tuple):
+            if math.modf(left)[0] == 0:
+                left = int(left)
+            if left == 1:
+                if op == '*':
+                    return right
+                elif op == '^':
+                    return 1.0
+                else:
+                    return (op, str(left), right)
+            elif left == 0:
+                if op in '*/':
+                    return 0.0
+                elif op == '+':
+                    return right
+                elif op == '-':
+                    return ('*', '-1', right)
+            else:
+                return (op, str(left), right)
+        elif (type(left) == str or type(left) == tuple) and (type(right) == str or type(right) == tuple):
+            return (op, left, right)
+
+exp = "1/x"
+tokens = tokenize(exp)
+node = parse_add(tokens)[0]
+der = differentiate(node)
+sim = simplify(('+', '5', '1'))
+if type(sim)==float:
+    if math.modf(sim)[0] == 0:
+        sim = str(int(sim))
+    else:
+        sim = str(sim)
+print(sim)
