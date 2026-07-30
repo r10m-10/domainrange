@@ -29,7 +29,7 @@ unary_ops = {
     'arccosec': lambda v: math.asin(1 / v),
 }
 
-def differentiate(node):
+def differentiate_unsim(node):
     if type(node)==str:
         if node.isdigit() or '.' in node or (node[0] == '-' and node[1:].isdigit()) or (node[0]=='-' and node[1] =='.'):
             return '0'
@@ -38,50 +38,50 @@ def differentiate(node):
     elif len(node)==3:
         op, left, right = node
         if op in '+-':
-            return (op, differentiate(left), differentiate(right))
+            return (op, differentiate_unsim(left), differentiate_unsim(right))
         elif op == '*':
-            return ('+', ('*', differentiate(left), right), ('*', differentiate(right), left))
+            return ('+', ('*', differentiate_unsim(left), right), ('*', differentiate_unsim(right), left))
         elif op == '/':
-            return ('/', ('-', ('*', differentiate(left), right), ('*', differentiate(right), left)), ('^', right, '2'))
+            return ('/', ('-', ('*', differentiate_unsim(left), right), ('*', differentiate_unsim(right), left)), ('^', right, '2'))
         elif op == '^':
             if contains_var(right)==False:
-                return ('*', ('*', right, ('^', left, ('-', right, '1'))), differentiate(left))
+                return ('*', ('*', right, ('^', left, ('-', right, '1'))), differentiate_unsim(left))
             else:
-                return ('*', ('^', left, right), ('+', ('*', differentiate(right), ('ln', left)), ('*', right, ('/', differentiate(left), left))))
+                return ('*', ('^', left, right), ('+', ('*', differentiate_unsim(right), ('ln', left)), ('*', right, ('/', differentiate_unsim(left), left))))
     elif len(node)==2:
         op, child = node
         if op == 'sin':
-            return ('*', ('cos', child), differentiate(child))
+            return ('*', ('cos', child), differentiate_unsim(child))
         elif op == 'cos':
-            return ('*', ('*', '-1', ('sin', child)), differentiate(child))
+            return ('*', ('*', '-1', ('sin', child)), differentiate_unsim(child))
         elif op == 'tan':
-            return ('*', ('^', ('sec', child), '2'), differentiate(child))
+            return ('*', ('^', ('sec', child), '2'), differentiate_unsim(child))
         elif op == 'cosec':
-            return ('*', ('*', ('*', '-1', ('cosec', child)), ('cot', child)), differentiate(child))
+            return ('*', ('*', ('*', '-1', ('cosec', child)), ('cot', child)), differentiate_unsim(child))
         elif op == 'sec':
-            return ('*', ('*', ('sec', child), ('tan', child)), differentiate(child))
+            return ('*', ('*', ('sec', child), ('tan', child)), differentiate_unsim(child))
         elif op == 'cot':
-            return ('*', ('*', '-1', ('^', ('cosec', child), '2')), differentiate(child))
+            return ('*', ('*', '-1', ('^', ('cosec', child), '2')), differentiate_unsim(child))
         elif op == 'arcsin':
-            return ('*', ('/', '1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate(child))
+            return ('*', ('/', '1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate_unsim(child))
         elif op == 'arccos':
-            return ('*', ('/', '-1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate(child))
+            return ('*', ('/', '-1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate_unsim(child))
         elif op == 'arctan':
-            return ('*', ('/', '1', ('+', '1', ('^', child, '2'))), differentiate(child))
+            return ('*', ('/', '1', ('+', '1', ('^', child, '2'))), differentiate_unsim(child))
         elif op == 'arccosec':
-            return ('*', ('/', '-1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate(child))
+            return ('*', ('/', '-1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate_unsim(child))
         elif op == 'arcsec':
-            return ('*', ('/', '1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate(child))
+            return ('*', ('/', '1', ('*', ('abs', child), ('-', ('^', child, '2'), '1'))), differentiate_unsim(child))
         elif op == 'arccot':
-            return ('*', ('/', '-1', ('+', '1', ('^', child, '2'))), differentiate(child))
+            return ('*', ('/', '-1', ('+', '1', ('^', child, '2'))), differentiate_unsim(child))
         elif op == 'sqrt':
             return ('/', '1', ('*', '2', ('sqrt', child)))
         elif op == 'ln':
-            return ('*', ('/', '1', child), differentiate(child))
+            return ('*', ('/', '1', child), differentiate_unsim(child))
         elif op == 'log':
-            return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate(child))
+            return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate_unsim(child))
 
-def simplify(node):
+def simplify_initial(node):
     if type(node) == str:
         if node.isalpha():
             return node
@@ -89,15 +89,15 @@ def simplify(node):
             return float(node)
     elif len(node) == 3:
         op, left, right = node
-        left = simplify(left)
-        right = simplify(right)
+        left = simplify_initial(left)
+        right = simplify_initial(right)
         if type(left) == type(right) == float:
             return binary_ops[op](left, right)
         elif (type(left) == str or type(left) == tuple) and type(right) == float:
             if math.modf(right)[0] == 0:
                 right = int(right)
             if right == 1:
-                if op in '*/':
+                if op in '*/^':
                     return left
                 else:
                     return (op, left, str(right))
@@ -132,14 +132,23 @@ def simplify(node):
         elif (type(left) == str or type(left) == tuple) and (type(right) == str or type(right) == tuple):
             return (op, left, right)
 
-exp = "1/x"
-tokens = tokenize(exp)
-node = parse_add(tokens)[0]
-der = differentiate(node)
-sim = simplify(('+', '5', '1'))
-if type(sim)==float:
-    if math.modf(sim)[0] == 0:
-        sim = str(int(sim))
+def simplify(node):
+    initial = simplify_initial(node)
+    if type(initial)==float:
+        if math.modf(initial)[0] == 0:
+            return str(int(initial))
+        else:
+            return str(initial)
     else:
-        sim = str(sim)
-print(sim)
+        return initial
+
+def differentiate(exp):
+    tokens = tokenize(exp)
+    print(tokens)
+    node = parse_add(tokens)[0]
+    der = differentiate_unsim(node)
+    print(der)
+    sim = simplify(der)
+    return sim
+
+print (differentiate('2x^2'))

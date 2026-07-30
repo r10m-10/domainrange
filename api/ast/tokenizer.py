@@ -13,6 +13,8 @@ def tokenize(exp):
                         tokens.extend(['-1', '*'])
                 else:
                     tokens.append(exp[i])
+            elif i<len(exp)-1 and exp[i]==')' and exp[i+1]=='(':
+                tokens.extend([exp[i], '*'])
             else:
                 tokens.append(exp[i])
         elif exp[i].isdigit():
@@ -22,6 +24,8 @@ def tokenize(exp):
                     tokens.append("".join(num))
                     num.clear()
                 else:
+                    if exp[i-1] == ')':
+                        tokens.append('*')
                     tokens.append(exp[i])
             elif exp[i-1] == "-":
                 if exp[i+1].isdigit() or exp[i+1] == '.':
@@ -30,6 +34,12 @@ def tokenize(exp):
                     num.append(exp[i])
                     tokens.append("".join(num))
                     num.clear()
+            elif exp[i-1] == ')' and i!=0:
+                tokens.append('*')
+                if exp[i+1].isdigit() or exp[i+1] == '.':
+                    num.append(exp[i])
+                else:
+                    tokens.append(exp[i])
             elif exp[i+1].isdigit():
                 num.append(exp[i])
             elif exp[i+1] == ".":
@@ -51,14 +61,16 @@ def tokenize(exp):
                     tokens.append("".join(word))
                     word.clear()
                 else:
+                    if exp[i-1] == ')':
+                        tokens.append('*')
                     tokens.append(exp[i])
-            elif exp[i-1] == "-":
+            elif exp[i-1] == ')' and i!=0:
+                print(exp[i])
+                tokens.append('*')
                 if exp[i+1].isalpha():
                     word.append(exp[i])
                 else:
-                    word.append(exp[i])
-                    tokens.append("".join(word))
-                    word.clear()
+                    tokens.append(exp[i])            
             elif exp[i+1].isalpha():
                 word.append(exp[i])
             elif exp[i-1].isalpha():
@@ -67,6 +79,8 @@ def tokenize(exp):
                 word.clear()
             else:
                 tokens.append(exp[i])
+                if exp[i+1].isdigit() or exp[i+1] == '(':
+                    tokens.append('*')
         elif exp[i] == ".":
             num.append(exp[i])
     return tokens
