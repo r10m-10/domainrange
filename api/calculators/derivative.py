@@ -142,13 +142,74 @@ def simplify(node):
     else:
         return initial
 
+def flatten(node, op):
+    if type(node) == str:
+        return [node]
+    elif len(node)==3:
+        cur_op, left, right = node
+        if cur_op == op:
+            left = flatten(left, op)
+            right = flatten(right, op)
+            left.extend(right)
+            return left
+        else:
+            return [node]
+    elif len(node)==2:
+        return [node]
+
 def differentiate(exp):
     tokens = tokenize(exp)
-    print(tokens)
     node = parse_add(tokens)[0]
     der = differentiate_unsim(node)
-    print(der)
     sim = simplify(der)
     return sim
 
-print (differentiate('2x^2'))
+def collect_and_reduce(flat, op):
+    nums = []
+    symbols = []
+    for i in flat:
+        if type(i) == str:
+            try:
+                nums.append(float(i))
+            except ValueError:
+                symbols.append(i)
+        else:
+            symbols.append(i)
+
+    if len(nums) == 0:
+        calc = None
+    else:
+        calc = nums[0]
+        for i in nums[1:]:
+            calc = binary_ops[op](calc, i)
+        if math.modf(calc)[0] == 0:
+            calc = str(int(calc))
+        else:
+            calc = str(calc)
+    return calc, symbols
+
+def rebuild(combined_num, symbols, op):
+    if len(symbols) == 0 and combined_num!=None:
+        return float(combined_num)
+    elif len(symbols) == 1:
+        if combined_num==None or (combined_num=='1' and op=='*') or (combined_num=='0' and op=='+'):
+            return symbols[0]
+        elif combined_num=='0' and op=='*':
+            return 0.0
+        else:
+            return (op, symbols[0], combined_num)
+    else:
+        left = symbols[0]
+        for i in symbols[1:]:
+            left = (op, left, i)
+        if combined_num==None or (combined_num=='1' and op=='*') or (combined_num=='0' and op=='+'):
+            return left
+        elif combined_num=='0' and op=='*':
+            return 0.0
+        else:
+            return (op, left, combined_num)
+
+der = differentiate('2x^2')
+flat = flatten(der, '*')
+num, sym = collect_and_reduce(flat, '*')
+print(rebuild('0', ['x'], '*'))
