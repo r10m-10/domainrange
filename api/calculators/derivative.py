@@ -91,22 +91,35 @@ def simplify_initial(node):
         op, left, right = node
         left = simplify_initial(left)
         right = simplify_initial(right)
-        if type(left) == type(right) == float:
+        if op in '+*':
+            if type(left)==float:
+                if math.modf(left)[0]==0:
+                    left = str(int(left))
+                else:
+                    left = str(left)
+            if type(right)==float:
+                if math.modf(right)[0]==0:
+                    right = str(int(right))
+                else:
+                    right = str(right)
+            flat = flatten((op, left, right), op)
+            num, sym = collect_and_reduce(flat, op)
+            final = rebuild(num, sym, op)
+            return final
+        elif type(left) == type(right) == float:
             return binary_ops[op](left, right)
         elif (type(left) == str or type(left) == tuple) and type(right) == float:
             if math.modf(right)[0] == 0:
                 right = int(right)
             if right == 1:
-                if op in '*/^':
+                if op in '/^':
                     return left
                 else:
                     return (op, left, str(right))
             elif right == 0:
-                if op == '*':
-                    return 0.0
-                elif op == '^':
+                if op == '^':
                     return 1.0
-                elif op in '+-':
+                elif op in '-':
                     return left
             else:
                 return (op, left, str(right))
@@ -114,23 +127,21 @@ def simplify_initial(node):
             if math.modf(left)[0] == 0:
                 left = int(left)
             if left == 1:
-                if op == '*':
-                    return right
-                elif op == '^':
+                if op == '^':
                     return 1.0
                 else:
                     return (op, str(left), right)
             elif left == 0:
-                if op in '*/':
+                if op in '/':
                     return 0.0
-                elif op == '+':
-                    return right
                 elif op == '-':
                     return ('*', '-1', right)
             else:
                 return (op, str(left), right)
         elif (type(left) == str or type(left) == tuple) and (type(right) == str or type(right) == tuple):
             return (op, left, right)
+    elif len(node)==2:
+        pass
 
 def simplify(node):
     initial = simplify_initial(node)
@@ -156,13 +167,6 @@ def flatten(node, op):
             return [node]
     elif len(node)==2:
         return [node]
-
-def differentiate(exp):
-    tokens = tokenize(exp)
-    node = parse_add(tokens)[0]
-    der = differentiate_unsim(node)
-    sim = simplify(der)
-    return sim
 
 def collect_and_reduce(flat, op):
     nums = []
@@ -209,7 +213,39 @@ def rebuild(combined_num, symbols, op):
         else:
             return (op, left, combined_num)
 
-der = differentiate('2x^2')
-flat = flatten(der, '*')
-num, sym = collect_and_reduce(flat, '*')
-print(rebuild('0', ['x'], '*'))
+def differentiate(exp):
+    tokens = tokenize(exp)
+    node = parse_add(tokens)[0]
+    der = differentiate_unsim(node)
+    sim = simplify(der)
+    return sim
+
+test_exprs = [
+    "2x^2",
+    "3x",
+    "5x^3",
+    "x^2 + x",
+    "x^2 + 2x + 3x^2",
+    "2x + 3x",
+    "2*3*x",
+    "x*2*3",
+    "(2x)(3x)",
+    "5*x",
+    "7",
+    "x*7",
+    "sin(x)*2",
+    "2*sin(x)*3",
+    "x^2/x",
+    "x/2",
+    "2/x",
+    "x^3",
+    "0*x",
+    "1*x",
+    "x + 0",
+    "x*1*y",
+    "-2x",
+    "x - 3x",
+]
+
+for i in test_exprs:
+    print(differentiate(i))
