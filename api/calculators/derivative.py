@@ -81,6 +81,12 @@ def differentiate_unsim(node):
         elif op == 'log':
             return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate_unsim(child))
 
+def convert_to_str(num):
+    if math.modf(num)[0] == 0:
+        return str(int(num))
+    else:
+        return str(num)
+
 def simplify_initial(node):
     if type(node) == str:
         if node.isalpha():
@@ -93,15 +99,9 @@ def simplify_initial(node):
         right = simplify_initial(right)
         if op in '+*':
             if type(left)==float:
-                if math.modf(left)[0]==0:
-                    left = str(int(left))
-                else:
-                    left = str(left)
+                left = convert_to_str(left)
             if type(right)==float:
-                if math.modf(right)[0]==0:
-                    right = str(int(right))
-                else:
-                    right = str(right)
+                right = convert_to_str(right)
             flat = flatten((op, left, right), op)
             num, sym = collect_and_reduce(flat, op)
             final = rebuild(num, sym, op)
@@ -141,15 +141,16 @@ def simplify_initial(node):
         elif (type(left) == str or type(left) == tuple) and (type(right) == str or type(right) == tuple):
             return (op, left, right)
     elif len(node)==2:
-        pass
+        op, child = node
+        child = simplify_initial(child)
+        if type(child)==float:
+            child = convert_to_str(child)
+        return (op, child)
 
 def simplify(node):
     initial = simplify_initial(node)
     if type(initial)==float:
-        if math.modf(initial)[0] == 0:
-            return str(int(initial))
-        else:
-            return str(initial)
+        return convert_to_str(initial)
     else:
         return initial
 
@@ -186,10 +187,41 @@ def collect_and_reduce(flat, op):
         calc = nums[0]
         for i in nums[1:]:
             calc = binary_ops[op](calc, i)
-        if math.modf(calc)[0] == 0:
-            calc = str(int(calc))
+        calc = convert_to_str(calc)
+
+    terms = []
+    for i in symbols:
+        if type(i)==str and i.isalpha():
+            terms.append((i,1.0))
+        elif type(i)==tuple:
+            if len(i)==3:
+                new_op, left, right = i
+                if new_op == '*':
+                    if type(left)==str and left.isalpha()==False:
+                        terms.append((right,float(left)))
+                    elif type(right)==str and right.isalpha()==False:
+                        terms.append((left,float(right)))
+                else:
+                    terms.append((i,1.0))
+            else:
+                terms.append((i,1.0))
+    symbols.clear()
+    tmp=[]
+    for i in range(len(terms)):
+        cur_sym, cur_val = terms[i]
+        if any(cur_sym in i for i in tmp):
+            continue
         else:
-            calc = str(calc)
+            for j in range(i+1, len(terms)):
+                nxt_sym, nxt_val = terms[j]
+                if cur_sym == nxt_sym:
+                    cur_val += nxt_val
+            tmp.append({cur_sym:cur_val})
+            if cur_val==1.0:
+                symbols.append(cur_sym)
+            else:
+                cur_val = convert_to_str(cur_val)
+                symbols.append(('*', cur_val, cur_sym))
     return calc, symbols
 
 def rebuild(combined_num, symbols, op):
@@ -247,5 +279,43 @@ test_exprs = [
     "x - 3x",
 ]
 
-for i in test_exprs:
-    print(differentiate(i))
+#for i in test_exprs:
+#    print(differentiate(i))
+op = '*'
+symbols = ['x', ('sin', ('*', '2', ('^', 'x', '2'))), ('*', '6', 'x'), ('*', '3', 'x'), ('*', '6', ('^', 'x', '2'))]
+terms = []
+for i in symbols:
+    if type(i)==str and i.isalpha():
+        terms.append((i,1.0))
+    elif type(i)==tuple:
+        if len(i)==3:
+            new_op, left, right = i
+            if new_op == '*' and op=='+':
+                if type(left)==str and left.isalpha()==False:
+                    terms.append((right,float(left)))
+                elif type(right)==str and right.isalpha()==False:
+                    terms.append((left,float(right)))
+            elif new_op == '^' and op=='*':
+                terms.append((left, right))
+            else:
+                terms.append((i,1.0))
+        else:
+            terms.append((i,1.0))
+symbols.clear()
+tmp=[]
+for i in range(len(terms)):
+    cur_sym, cur_val = terms[i]
+    if any(cur_sym in i for i in tmp):
+        continue
+    else:
+        for j in range(i+1, len(terms)):
+            nxt_sym, nxt_val = terms[j]
+            if cur_sym == nxt_sym:
+                cur_val += nxt_val
+        tmp.append({cur_sym:cur_val})
+        if cur_val==1.0:
+            symbols.append(cur_sym)
+        else:
+            cur_val = convert_to_str(cur_val)
+            symbols.append(('*', cur_val, cur_sym))
+print(terms)
