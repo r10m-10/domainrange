@@ -34,6 +34,8 @@ def tokenize(exp):
                     num.append(exp[i])
                     tokens.append("".join(num))
                     num.clear()
+                if exp[i+1].isalpha():
+                    tokens.append('*')
             elif exp[i-1] == ')' and i!=0:
                 tokens.append('*')
                 if exp[i+1].isdigit() or exp[i+1] == '.':

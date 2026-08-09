@@ -453,3 +453,5 @@ def find_domain(exp):
     practical = intersect_interval(intervals)
     pretty = normalize_domain(practical)
     return (pretty, practical)
+
+#print(find_domain('sqrt([x+2]+3)')[0])
