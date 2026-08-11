@@ -97,15 +97,9 @@ def simplify_initial(node):
         op, left, right = node
         left = simplify_initial(left)
         right = simplify_initial(right)
-        if op in '+*':
-            if type(left)==float:
-                left = convert_to_str(left)
-            if type(right)==float:
-                right = convert_to_str(right)
-            flat = flatten((op, left, right), op)
-            num, sym = collect_and_reduce(flat, op)
-            final = rebuild(num, sym, op)
-            return final
+        if op in '+-*/':
+            if op in '+-':
+                pass
         elif type(left) == type(right) == float:
             return binary_ops[op](left, right)
         elif (type(left) == str or type(left) == tuple) and type(right) == float:
@@ -176,84 +170,6 @@ def flatten(node, op):
             return [node]
     elif len(node)==2:
         return [node]
-
-def collect_and_reduce(flat, op):
-    nums = []
-    symbols = []
-    for i in flat:
-        if type(i) == str:
-            try:
-                nums.append(float(i))
-            except ValueError:
-                symbols.append(i)
-        else:
-            symbols.append(i)
-
-    if len(nums) == 0:
-        calc = None
-    else:
-        calc = nums[0]
-        for i in nums[1:]:
-            calc = binary_ops[op](calc, i)
-        calc = convert_to_str(calc)
-
-    terms = []
-    for i in symbols:
-        if type(i)==str and i.isalpha():
-            terms.append((i,1.0))
-        elif type(i)==tuple:
-            if len(i)==3:
-                if i[0] == '*':
-                    flat_new = flatten(i, '*')
-                    calc_new, sym_new = collect_and_reduce(flat_new, '*')
-                    n_op, n_l, n_r = rebuild(calc_new, sym_new, '*')
-                    if type(n_l)==str and n_l.isalpha()==False:
-                        terms.append((n_r,float(n_l)))
-                    elif type(n_r)==str and n_r.isalpha()==False:
-                        terms.append((n_l,float(n_r)))
-                else:
-                    terms.append((i,1.0))
-            else:
-                terms.append((i,1.0))
-    symbols.clear()
-    tmp=[]
-    for i in range(len(terms)):
-        cur_sym, cur_val = terms[i]
-        if any(cur_sym in i for i in tmp):
-            continue
-        else:
-            for j in range(i+1, len(terms)):
-                nxt_sym, nxt_val = terms[j]
-                if cur_sym == nxt_sym:
-                    cur_val += nxt_val
-            tmp.append({cur_sym:cur_val})
-            if cur_val==1.0:
-                symbols.append(cur_sym)
-            else:
-                cur_val = convert_to_str(cur_val)
-                symbols.append(('*', cur_val, cur_sym))
-    return calc, symbols
-
-def rebuild(combined_num, symbols, op):
-    if len(symbols) == 0 and combined_num!=None:
-        return float(combined_num)
-    elif len(symbols) == 1:
-        if combined_num==None or (combined_num=='1' and op=='*') or (combined_num=='0' and op=='+'):
-            return symbols[0]
-        elif combined_num=='0' and op=='*':
-            return 0.0
-        else:
-            return (op, symbols[0], combined_num)
-    else:
-        left = symbols[0]
-        for i in symbols[1:]:
-            left = (op, left, i)
-        if combined_num==None or (combined_num=='1' and op=='*') or (combined_num=='0' and op=='+'):
-            return left
-        elif combined_num=='0' and op=='*':
-            return 0.0
-        else:
-            return (op, left, combined_num)
 
 def differentiate(exp):
     tokens = tokenize(exp)
@@ -362,22 +278,57 @@ def form_node(merged_term):
     elif coeff == exp == 1.0:
         return base
     elif coeff == 1.0:
-        exp = convert_to_str(exp)
+        if type(exp)==float:
+            exp = convert_to_str(exp)
         return ('^', base, exp)
     elif exp == 1.0:
         coeff = convert_to_str(coeff)
         return ('*', coeff, base)
     else:
-        coeff, exp = convert_to_str(coeff), convert_to_str(exp)
+        coeff = convert_to_str(coeff)
+        if type(exp)==float:
+            exp = convert_to_str(exp)
         return ('*', coeff, ('^', base, exp))
 
-node = differentiate('x^2 * 3')
+def rebuild(nodes, op):
+    left = nodes[0]
+    for i in nodes[1:]:
+        if type(i) == str:
+            if op in '+-':
+                if i[0] == '-':
+                    left = ('-', left, i[1:])
+                else:
+                    left = ('+', left, i)
+            elif op in '*/':
+                left = ('*', left, i)
+        elif len(i)==3:
+            cop, l, r = i
+            if op in '+-':
+                if type (l) == str and l.isalpha()==False and float(l)<0:
+                    left = ('-', left, (cop, l[1:], r))
+                else:
+                    left = ('+', left, i)
+            elif op in '*/':
+                left = ('*', left, i)
+        elif len(i)==2:
+            if op in '+-':
+                left = ('+', left, i)
+            elif op in '*/':
+                left = ('*', left, i)
+    return left
+
+node = differentiate('3x^2 + 2 + 1 + 6x^2')
 print(node)
 fl = (flatten(node, '+'))
 print(fl)
 terms = []
 for i in fl:
-    term = form_term(i)
-    terms.append(term)
+    terms.append(form_term(i))
 print(terms)
-merged = merge_terms(terms, '*')
+merged = merge_terms(terms, '+')
+nodes = []
+for i in merged:
+    nodes.append(form_node(i))
+print(nodes)
+node = rebuild(nodes, '+')
+print(node)
