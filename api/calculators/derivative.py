@@ -97,43 +97,41 @@ def simplify_initial(node):
         op, left, right = node
         left = simplify_initial(left)
         right = simplify_initial(right)
-        if op in '+-*/':
-            if op in '+-':
-                pass
-        elif type(left) == type(right) == float:
+        if type(left) == type(right) == float:
             return binary_ops[op](left, right)
-        elif (type(left) == str or type(left) == tuple) and type(right) == float:
-            if math.modf(right)[0] == 0:
-                right = int(right)
-            if right == 1:
-                if op in '/^':
-                    return left
-                else:
-                    return (op, left, str(right))
-            elif right == 0:
-                if op == '^':
-                    return 1.0
-                elif op in '-':
-                    return left
+        elif op in '+-*/':
+            if type(left) == float:
+                left = convert_to_str(left)
+            if type(right) == float:
+                right = convert_to_str(right)
+            if op in '+-':
+                flat = flatten((op, left, right), '+')
             else:
-                return (op, left, str(right))
-        elif type(left) == float and (type(right) == str or type(right) == tuple):
-            if math.modf(left)[0] == 0:
-                left = int(left)
-            if left == 1:
-                if op == '^':
+                flat = flatten((op, left, right), '*')
+            terms = []
+            for i in flat:
+                terms.append(form_term(i))
+            merged = merge_terms(terms, op)
+            nodes = []
+            for i in merged:
+                nodes.append(form_node(i))
+            final = rebuild(nodes, op)
+            return final
+        elif op == '^':
+            if type(right) == float:
+                if right == 1.0:
+                    return left
+                elif right == 0.0:
                     return 1.0
                 else:
-                    return (op, str(left), right)
-            elif left == 0:
-                if op in '/':
-                    return 0.0
-                elif op == '-':
-                    return ('*', '-1', right)
+                    return (op, left, convert_to_str(right))
+            elif type(left) == float:
+                if left == 1.0:
+                    return 1.0
+                else:
+                    return (op, convert_to_str(left), right)
             else:
-                return (op, str(left), right)
-        elif (type(left) == str or type(left) == tuple) and (type(right) == str or type(right) == tuple):
-            return (op, left, right)
+                return (op, left, right)
     elif len(node)==2:
         op, child = node
         child = simplify_initial(child)
@@ -159,7 +157,11 @@ def flatten(node, op):
             left.extend(right)
             return left
         elif op=='+' and cur_op=='-':
-            new_node = ('+', left, ('*', '-1', right))
+            neg = ('*', '-1', right)
+            neg = simplify_initial(neg)
+            if type(neg) == float:
+                neg = convert_to_str(neg)
+            new_node = ('+', left, neg)
             f = flatten(new_node, op)
             return f
         elif op=='*' and cur_op=='/':
@@ -170,40 +172,6 @@ def flatten(node, op):
             return [node]
     elif len(node)==2:
         return [node]
-
-def differentiate(exp):
-    tokens = tokenize(exp)
-    node = parse_add(tokens)[0]
-    der = differentiate_unsim(node)
-    sim = simplify(der)
-    return node
-
-test_exprs = [
-    "2x^2",
-    "3x",
-    "5x^3",
-    "x^2 + x",
-    "x^2 + 2x + 3x^2",
-    "2x + 3x",
-    "2*3*x",
-    "x*2*3",
-    "(2x)(3x)",
-    "5*x",
-    "7",
-    "x*7",
-    "sin(x)*2",
-    "2*sin(x)*3",
-    "x^2/x",
-    "x/2",
-    "2/x",
-    "x^3",
-    "0*x",
-    "1*x",
-    "x + 0",
-    "x*1*y",
-    "-2x",
-    "x - 3x",
-]
 
 def form_term(node):
     if type(node)==str:
@@ -230,6 +198,8 @@ def form_term(node):
                         return (float(right), left[1], left[2])
                 else:
                     return (float(right), left, 1.0)
+            else:
+                return (1.0, node, 1.0)
         elif op=='^':
             try:
                 return (1.0, left, float(right))
@@ -298,37 +268,105 @@ def rebuild(nodes, op):
                 if i[0] == '-':
                     left = ('-', left, i[1:])
                 else:
-                    left = ('+', left, i)
+                    if left == '0':
+                        left = i
+                    elif i == '0':
+                        left = left
+                    else:
+                        left = ('+', left, i)
             elif op in '*/':
-                left = ('*', left, i)
+                if (type(left) == str and left.isalpha() == False) or (type(i) == str and i.isalpha() == False):
+                    if left == '0' or i == '0':
+                        left = '0'
+                    elif left == '1':
+                        left = i
+                    elif i == '1':
+                        left = left
+                    else:
+                        left = ('*', left, i)
+                else:
+                    left = ('*', left, i)
         elif len(i)==3:
             cop, l, r = i
             if op in '+-':
-                if type (l) == str and l.isalpha()==False and float(l)<0:
-                    left = ('-', left, (cop, l[1:], r))
+#                if type (l) == str and l.isalpha()==False and float(l)<0:
+#                    left = ('-', left, (cop, l[1:], r))
+#                else:
+                if left == '0':
+                    left = i
+                elif i == '0':
+                    left == left
                 else:
                     left = ('+', left, i)
             elif op in '*/':
-                left = ('*', left, i)
+                if left == '0':
+                    left = '0'
+                elif left == '1':
+                    left = i
+                else:
+                    left = ('*', left, i)
         elif len(i)==2:
             if op in '+-':
                 left = ('+', left, i)
             elif op in '*/':
-                left = ('*', left, i)
-    return left
+                if left == '0':
+                    left = '0'
+                elif left == '1':
+                    left = i
+                else:
+                    left = ('*', left, i)
+    if type(left) == str and left.isalpha() == False:
+        return float(left)
+    else:
+        return left
 
-node = differentiate('3x^2 + 2 + 1 + 6x^2')
-print(node)
-fl = (flatten(node, '+'))
-print(fl)
-terms = []
-for i in fl:
-    terms.append(form_term(i))
-print(terms)
-merged = merge_terms(terms, '+')
-nodes = []
-for i in merged:
-    nodes.append(form_node(i))
-print(nodes)
-node = rebuild(nodes, '+')
-print(node)
+def differentiate(exp):
+    tokens = tokenize(exp)
+    node = parse_add(tokens)[0]
+    print(node)
+    der = differentiate_unsim(node)
+    print(der)
+    sim = simplify(der)
+    return sim
+
+test_exprs = [
+    "2x^2",
+    "3x",
+    "5x^3",
+    "x^2 + x",
+    "x^2 + 2x + 3x^2",
+    "2x + 3x",
+    "2*3*x",
+    "x*2*3",
+    "(2x)(3x)",
+    "5*x",
+    "7",
+    "x*7",
+    "sin(x)*2",
+    "2*sin(x)*3",
+    "x^2/x",
+    "x/2",
+    "2/x",
+    "x^3",
+    "0*x",
+    "1*x",
+    "x + 0",
+    "x*1*y",
+    "-2x",
+    "x - 3x",
+]
+
+#flat = flatten(('+', ('-', ('*', '14', 'x'),'2'), '0'), '+')
+#print(flat)
+#terms = []
+#for i in flat:
+#    terms.append(form_term(i))
+#print(terms)
+#merged = merge_terms(terms, '+')
+#print(merged)
+#nodes = []
+#for i in merged:
+#    nodes.append(form_node(i))
+#print(nodes)
+#final = rebuild(nodes, '+')
+#print(final)
