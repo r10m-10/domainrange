@@ -123,6 +123,13 @@ def simplify_initial(node):
                     return left
                 elif right == 0.0:
                     return 1.0
+                elif type(left) == tuple and left[0] == '^':
+                    if type(left[2]) == str and left[2].isalpha() == False:
+                        exp = convert_to_str(float(left[2]) * right)
+                        return ('^', left[1], exp)
+                    else:
+                        exp = ('*', left[2], convert_to_str(right))
+                        return ('^', left[1], simplify(exp))
                 else:
                     return (op, left, convert_to_str(right))
             elif type(left) == float:
@@ -158,14 +165,14 @@ def flatten(node, op):
             return left
         elif op=='+' and cur_op=='-':
             neg = ('*', '-1', right)
-            neg = simplify_initial(neg)
-            if type(neg) == float:
-                neg = convert_to_str(neg)
+            neg = simplify(neg)
             new_node = ('+', left, neg)
             f = flatten(new_node, op)
             return f
         elif op=='*' and cur_op=='/':
-            new_node = ('*', left, ('^', right, '-1'))
+            div = ('^', right, '-1')
+            div = simplify(div)
+            new_node = ('*', left, div)
             f = flatten(new_node, op)
             return f
         else:
@@ -198,6 +205,12 @@ def form_term(node):
                         return (float(right), left[1], left[2])
                 else:
                     return (float(right), left, 1.0)
+            elif (type(right)==tuple and right[0]=='*') or (type(left)==tuple and left[0]=='*'):
+                coeff, base = extract_cb(node, '*')
+                if coeff == None:
+                    return (1.0, base, 1.0)
+                else:
+                    return (coeff, base, 1.0)
             else:
                 return (1.0, node, 1.0)
         elif op=='^':
@@ -245,6 +258,10 @@ def form_node(merged_term):
     coeff, base, exp = merged_term
     if base == exp == None:
         return convert_to_str(coeff)
+    elif coeff == 0.0:
+        return '0'
+    elif exp == 0.0:
+        return '1'
     elif coeff == exp == 1.0:
         return base
     elif coeff == 1.0:
@@ -289,15 +306,19 @@ def rebuild(nodes, op):
         elif len(i)==3:
             cop, l, r = i
             if op in '+-':
-#                if type (l) == str and l.isalpha()==False and float(l)<0:
-#                    left = ('-', left, (cop, l[1:], r))
-#                else:
-                if left == '0':
-                    left = i
-                elif i == '0':
-                    left == left
+                if type (l) == str and l.isalpha()==False and float(l)<0:
+                    if l == '-1':
+                        if left == '0':
+                            left = i
+                        else:
+                            left = ('-', left, r)
+                    else:
+                        left = ('-', left, (cop, l[1:], r))
                 else:
-                    left = ('+', left, i)
+                    if left == '0':
+                        left = i
+                    else:
+                        left = ('+', left, i)
             elif op in '*/':
                 if left == '0':
                     left = '0'
@@ -320,53 +341,100 @@ def rebuild(nodes, op):
     else:
         return left
 
+def extract_cb(node, op):
+    flat = flatten(node, op)
+    terms = []
+    for i in flat:
+        terms.append(form_term(i))
+    merged = merge_terms(terms, op)
+    nodes = []
+    for i in merged:
+        nodes.append(form_node(i))
+    coeff = None
+    base = []
+    for i in nodes:
+        try:
+            coeff = float(i)
+        except (ValueError, TypeError):
+            base.append(i)
+    base = rebuild(base, op)
+    return coeff, base
+
 def differentiate(exp):
     tokens = tokenize(exp)
     node = parse_add(tokens)[0]
-    print(node)
-    der = differentiate_unsim(node)
-    print(der)
-    sim = simplify(der)
-    return sim
+    sim_node = simplify(node)
+    der = differentiate_unsim(sim_node)
+    final = simplify(der)
+    return final
 
-test_exprs = [
-    "2x^2",
-    "3x",
-    "5x^3",
-    "x^2 + x",
-    "x^2 + 2x + 3x^2",
-    "2x + 3x",
-    "2*3*x",
-    "x*2*3",
-    "(2x)(3x)",
-    "5*x",
-    "7",
-    "x*7",
-    "sin(x)*2",
-    "2*sin(x)*3",
-    "x^2/x",
-    "x/2",
-    "2/x",
-    "x^3",
-    "0*x",
-    "1*x",
-    "x + 0",
-    "x*1*y",
-    "-2x",
-    "x - 3x",
-]
-
-#flat = flatten(('+', ('-', ('*', '14', 'x'),'2'), '0'), '+')
+#op = '+'
+#flat = flatten(('-', ('*', '2', 'x'), 'x'), op)
 #print(flat)
 #terms = []
 #for i in flat:
 #    terms.append(form_term(i))
 #print(terms)
-#merged = merge_terms(terms, '+')
+#merged = merge_terms(terms, op)
 #print(merged)
 #nodes = []
 #for i in merged:
 #    nodes.append(form_node(i))
 #print(nodes)
-#final = rebuild(nodes, '+')
+#final = rebuild(nodes, op)
 #print(final)
+
+test_exprs = [
+    "x^2",              # expect: 2x
+    "x^3",              # expect: 3x^2
+    "5x^2",             # expect: 10x
+    "x^2 - x",          # expect: 2x - 1
+    "x^2 + 3x - 5",     # expect: 2x + 3
+
+    "sin(x)",           # expect: cos(x)
+    "cos(x)",           # expect: -sin(x)  (or equivalent with -1 coefficient)
+    "tan(x)",           # expect: sec(x)^2
+    "sec(x)",           # expect: sec(x)*tan(x)
+
+    "x - sin(x)",       # expect: 1 - cos(x)  -- exercises differentiate_unsim's '-' handling + final simplify
+
+    "x*sin(x)",         # expect: sin(x) + x*cos(x)  -- product rule, two different function bases
+    "sin(x)*cos(x)",    # expect: cos(x)^2 - sin(x)^2  -- product rule, distinct trig bases
+    "x^2*sin(x)",       # expect: 2x*sin(x) + x^2*cos(x)
+    "(x^2)(3x)",        # expect: 9x^2  -- product rule where both sides are powers of same base;
+                         # low confidence this fully re-collapses through merge_terms after
+                         # differentiate_unsim, worth checking closely
+
+    "sin(x)/x",         # expect: (x*cos(x) - sin(x))/x^2  -- quotient rule
+    "x/sin(x)",         # expect: quotient rule, mirrored -- check sign/shape consistency vs above
+
+    "sin(x^2)",         # expect: 2x*cos(x^2)  -- chain rule, non-constant exponent inside
+    "sqrt(x)",          # expect: 1/(2*sqrt(x))
+    "x*sqrt(x)",        # expect: mathematically (3/2)*sqrt(x); LOW confidence the pipeline
+                         # fully collapses this -- sqrt(x) is a 2-tuple base, exponent arithmetic
+                         # across two sqrt(x) factors isn't something we've tested this session
+
+    "ln(x)",            # expect: 1/x
+    "ln(x^2)",          # expect: 2/x  -- chain rule then simplification should cancel the x^2/x down
+    "log(x)",           # expect: 1/(x*ln(10))
+
+    "1/x",              # expect: -1/x^2, or per your locked decision: -x^-2 (stays as ^, not /)
+    "1/x^2",            # expect: -2x^-3 (stays as ^, not /)
+
+    "x^x",              # expect: x^x * (ln(x) + 1)  -- variable base AND variable exponent,
+                         # general power rule branch in differentiate_unsim
+
+    "x^(2x)",           # expect: symbolic-exponent chain rule case, related to the merge_terms
+                         # x^(2x)*x^x test from earlier -- but this is differentiation, not
+                         # just multiplication, so it's a genuinely new code path
+
+    "2^x",              # expect: 2^x * ln(2)  -- constant base, variable exponent; tests whether
+                         # the left'/left term (which should multiply out to 0 since left'=0)
+                         # actually vanishes rather than leaving a dangling 0/2 or similar
+
+    "arcsin(x)",        # expect: 1/sqrt(1 - x^2)
+    "arctan(x)",        # expect: 1/(1 + x^2)
+]
+
+for i in test_exprs:
+    print(differentiate(i))
