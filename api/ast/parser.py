@@ -37,8 +37,11 @@ def parse_atom(tokens, pos):
         pos+=2
         left, pos = parse_add(tokens, pos)
         pos+=1
-        left = (token, left)
-        return (left, pos)    
+        if token == 'sqrt':
+            left = ('^', left, ('/', '1', '2'))
+        else:
+            left = (token, left)
+        return (left, pos)
     elif token.isdigit() or token.isalpha() or '.' in token or '-' in token:
         pos+=1
         return (token, pos)
