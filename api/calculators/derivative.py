@@ -37,9 +37,9 @@ def differentiate_unsim(node):
         elif op == 'cot':
             return ('*', ('*', '-1', ('^', ('cosec', child), '2')), differentiate_unsim(child))
         elif op == 'arcsin':
-            return ('*', ('/', '1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate_unsim(child))
+            return ('*', ('/', '1', ('^', ('-', '1', ('^', child, '2')), '0.5')), differentiate_unsim(child))
         elif op == 'arccos':
-            return ('*', ('/', '-1', ('sqrt', ('-', '1', ('^', child, '2')))), differentiate_unsim(child))
+            return ('*', ('/', '-1', ('^', ('-', '1', ('^', child, '2')), '0.5')), differentiate_unsim(child))
         elif op == 'arctan':
             return ('*', ('/', '1', ('+', '1', ('^', child, '2'))), differentiate_unsim(child))
         elif op == 'arccosec':
@@ -58,9 +58,8 @@ def differentiate(exp):
     node = parse_add(tokens)[0]
     sim_node = simplify(node)
     der = differentiate_unsim(sim_node)
-    final = simplify(der)
-    ptd = pow_to_div(final)
-    return ptd
+    final = pow_to_div(simplify(der))
+    return final
 
 #op = '*'
 #flat = flatten(('/', '1', ('-', 'x', '2')), op)

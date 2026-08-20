@@ -22,8 +22,10 @@ unary_ops = {
     'arctan': math.atan,
     'sec': lambda v: 1 / math.cos(v),
     'cosec': lambda v: 1 / math.sin(v),
+    'cot': lambda v: 1 / math.tan(v),
     'arcsec': lambda v: math.acos(1 / v),
     'arccosec': lambda v: math.asin(1 / v),
+    'arccot': lambda v: math.atan(1 / v)
 }
 
 def convert_to_str(num):
@@ -306,18 +308,39 @@ def pow_to_div(node):
         left = pow_to_div(left)
         right = pow_to_div(right)
         if op == '*':
-            if left[0] == '/' and left[1] == '1':
-                if type(right) == str and right.isalpha() == False:
+            if left[0] == right[0] == '/':
+                try:
+                    numr = float(left[1]) * float(right[1])
+                    return ('/', convert_to_str(numr), ('*', left[2], right[2]))
+                except (ValueError, TypeError):
+                    if left[1] == '1':
+                        return ('/', right[1], ('*', left[2], right[2]))
+                    elif right[1] == '1':
+                        return ('/', left[1], ('*', left[2], right[2]))
+                    else:
+                        return ('/', ('*', left[1], right[1]), ('*', left[2], right[2]))
+            elif left[0] == '/':
+                try:
                     numr = float(left[1]) * float(right)
                     return ('/', convert_to_str(numr), left[2])
-                else:
-                    return ('/', right, left[2])
-            elif right[0] == '/' and right[1] == '1':
-                if type(left) == str and left.isalpha() == False:
+                except (ValueError ,TypeError):
+                    if left[1] == '1':
+                        return ('/', right, left[2])
+                    elif right == '1':
+                        return ('/', left[1], left[2])
+                    else:
+                        return ('/', ('*', left[1], right), left[2])
+            elif right[0] == '/':
+                try:
                     numr = float(right[1]) * float(left)
                     return ('/', convert_to_str(numr), right[2])
-                else:
-                    return ('/', left, right[2])
+                except (ValueError ,TypeError):
+                    if right[1] == '1':
+                        return ('/', left, right[2])
+                    elif left == '1':
+                        return ('/', right[1], right[2])
+                    else:
+                        return ('/', ('*', right[1], left), right[2])
             else:
                 return (op, left, right)
         elif op == '^' and type(right) == str and right[0] == '-':
@@ -329,7 +352,7 @@ def pow_to_div(node):
         op, child = node
         child = pow_to_div(child)
         return (op, child)
-                
+
 def simplify(node):
     initial = simplify_initial(node)
     if type(initial)==float:
@@ -337,3 +360,7 @@ def simplify(node):
     else:
         return initial
 
+#sim = simplify(('^', ('/', '1', ('^', 'x', '2')), '3'))
+#print(sim)
+#ptd = pow_to_div(sim)
+#print(ptd)

@@ -1,6 +1,7 @@
 import math
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
+from .simplify import simplify, pow_to_div
 
 binary_ops = {
     '+': lambda a, b: a + b, 
@@ -24,8 +25,10 @@ unary_ops = {
     'arctan': math.atan,
     'sec': lambda v: 1 / math.cos(v),
     'cosec': lambda v: 1 / math.sin(v),
+    'cot': lambda v: 1 / math.tan(v),
     'arcsec': lambda v: math.acos(1 / v),
     'arccosec': lambda v: math.asin(1 / v),
+    'arccot': lambda v: math.atan(1 / v)
 }
 comparison_ops = {
     '>':  lambda a, b: a > b,
@@ -76,14 +79,17 @@ def get_constraints(node):
             if contains_var(right):
                 op_constraint = (right, '!=', '0')
                 constraints.append(op_constraint)
+        elif op == '^' and right == '0.5':
+            op_constraint = (left, '>=', '0')
+            constraints.append(op_constraint)
         return constraints
 
 def contains_var(node):
     if type(node) == str:
-        if node.isdigit() or '.' in node or (node[0]=='-' and node[1].isdigit()) or (node[0]=='-' and node[1] =='.'):
-            return False
-        else:
+        if node.isalpha():
             return True
+        else:
+            return False
     elif len(node) == 3:
         op, left, right = node
         l_x, r_x = contains_var(left), contains_var(right)
@@ -97,6 +103,8 @@ def safe_evaluate(node, x):
     try:
         val = evaluate_at(node, x)
     except (ValueError, ZeroDivisionError):
+        val = None
+    if type(val) == complex:
         val = None
     return val
 
@@ -124,42 +132,62 @@ def evaluate_at(node, x_val):
         num = unary_ops[op](child)
         return num
 
-def bisect(node, lo, hi, tol=1e-9):
+def bisect_class(node, lo, hi, tol=1e-9):
+    lo_class = classify(safe_evaluate(node, lo), tol)
     while (hi-lo)>tol:
-        x = (lo+hi)/2
-        lo_val = safe_evaluate(node, lo)
-        val = safe_evaluate(node, x)
-
-        if (lo_val is None) != (val is None):
-            if lo_val is None:
-                lo, hi = x, hi
-            else:
-                lo, hi = lo, x
-        elif lo_val is not None and val is not None and lo_val*val < 0:
-            lo, hi = lo, x
+        mid = (lo+hi)/2
+        mid_class = classify(safe_evaluate(node, mid), tol)
+        if mid_class == lo_class:
+            lo = mid
         else:
-            lo, hi = x, hi
-    return x
+            hi = mid
+    return hi
 
-def get_critical_points(node, lo, hi, step):
+def classify(val, tol=1e-9):
+    if val is None:
+        return 'undef'
+    elif val < -tol:
+        return 'neg'
+    elif val > tol:
+        return 'pos'
+    else:
+        return 'zero'
+
+def get_critical_points(node, lo, hi, step, tol=1e-9):
     critical_points = []
     x = lo
     prev_x = None
-    prev_val = None
+    prev_class = None
+    zero_run = []
+    first = True
 
     while x<= hi:
         val = safe_evaluate(node, x)
-        
-        if prev_val!=None and val!=None and prev_val*val < 0:
-            critical_points.append(round(bisect(node, prev_x, x), 6))
-        elif val == 0:
-            critical_points.append(x)
-        elif x!=lo and prev_val==None and val!=None:
-            critical_points.append(round(bisect(node, prev_x, x), 6))
-        elif x!=lo and prev_val!=None and val==None:
-            critical_points.append(round(bisect(node, prev_x, x), 6))
-        prev_x, prev_val = x, val
+        cls = classify(val, tol)
+
+        if first == False and cls != prev_class:
+            if {prev_class, cls} == {'neg', 'pos'}:
+                critical_points.append(round(bisect_class(node, prev_x, x), 6))
+            elif prev_class == 'undef' or cls == 'undef':
+                critical_points.append(round(bisect_class(node, prev_x, x), 6))
+            elif cls == 'zero':
+                inb = round(bisect_class(node, prev_x, x, tol), 6)
+                zero_run = [x]
+            elif prev_class == 'zero':
+                outb = round(bisect_class(node, prev_x, x, tol), 6)
+                if len(zero_run) == 1:
+                    critical_points.append(round(zero_run[0], 6))
+                else:
+                    critical_points.append(inb)
+                    critical_points.append(outb)
+                zero_run = []
+        elif cls == 'zero':
+            zero_run.append(x)
+        prev_x, prev_class = x, cls
+        first = False
         x+=step
+    if zero_run and inb is not None:
+        critical_points.append(inb)
     return sorted(critical_points)
 
 def test_domain_intervals(node, inequality, rhs, critical_points):
@@ -235,6 +263,8 @@ def test_domain_intervals(node, inequality, rhs, critical_points):
             prev_pt = i
     if not intervals:
         intervals.append((None, None, False, False))
+    if len(intervals) > 1:
+        intervals = union_intervals(intervals)
     return intervals
 
 def solve_constraints(constraints):
@@ -417,10 +447,21 @@ def normalize_domain(domain):
     else:
         for i in domain:
             if type(i) == list:
-                if len(domain) == 1 and len(i) == 2:
-                    x = i[0][1]
-                    if i == [(-math.inf, x, False, False), (x, math.inf, False, False)]:
-                        return 'R-{'+str(x)+'}'
+                if len(domain) == 1 and len(i) >= 2:
+                    is_pattern = i[0][0] == -math.inf and i[-1][1] == math.inf
+                    holes = []
+                    if is_pattern:
+                        for a, b in zip(i, i[1:]):
+                            a_hi, a_hi_incl = a[1], a[3]
+                            b_lo, b_lo_incl = b[0], b[2]
+                            if a_hi == b_lo and a_hi_incl == False and b_lo_incl == False:
+                                holes.append(a_hi)
+                            else:
+                                is_pattern = False
+                                break
+                    if is_pattern and holes:
+                        pts = ', '.join(str(h) for h in holes)
+                        return 'R-{' + pts + '}'
                 for j in i:
                     lo, hi, lo_incl, hi_incl = convert_incl(j)
                     if lo == hi:
@@ -448,10 +489,14 @@ def normalize_domain(domain):
 def find_domain(exp):
     tokens = tokenize(exp)
     node = parse_add(tokens)[0]
-    constraints = get_constraints(node)
+    sim = pow_to_div(simplify(node))
+    print (sim)
+    constraints = get_constraints(sim)
     intervals = solve_constraints(constraints)
     practical = intersect_interval(intervals)
     pretty = normalize_domain(practical)
     return (pretty, practical)
 
 #print(find_domain('sqrt([x+2]+3)')[0])
+
+print(find_domain('sqrt(x)/(x-1)')[0])
