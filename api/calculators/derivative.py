@@ -60,21 +60,3 @@ def differentiate(exp):
     der = differentiate_unsim(sim_node)
     final = pow_to_div(simplify(der))
     return final
-
-#op = '*'
-#flat = flatten(('/', '1', ('-', 'x', '2')), op)
-#print(flat)
-#terms = []
-#for i in flat:
-#    terms.append(form_term(i))
-#print(terms)
-#merged = merge_terms(terms, op)
-#print(merged)
-#nodes = []
-#for i in merged:
-#    nodes.append(form_node(i))
-#print(nodes)
-#final = rebuild(nodes, op)
-#print(final)
-
-print(differentiate('1 + 2*x^0.5'))

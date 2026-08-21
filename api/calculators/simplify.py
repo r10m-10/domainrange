@@ -12,7 +12,7 @@ unary_ops = {
     'log': math.log10,
     'ln': math.log,
     'abs': math.fabs,
-    'frac': lambda v: v - math.floor(v),
+    'frac': lambda v: math.modf(v)[0],
     'gif': math.floor,
     'sin': math.sin,
     'cos': math.cos,
@@ -353,14 +353,21 @@ def pow_to_div(node):
         child = pow_to_div(child)
         return (op, child)
 
+def float_to_frac(num: str):
+    if '.' not in num:
+        return num
+    frac_num = num[num.find('.')+1:]
+    x = len(str(frac_num))
+    numr = int(float(num) * 10**x)
+    denomi = 10**x
+    hcf = math.gcd(numr, denomi)
+    numr //= hcf
+    denomi //= hcf
+    return ('/', str(numr), str(denomi))
+
 def simplify(node):
     initial = simplify_initial(node)
     if type(initial)==float:
         return convert_to_str(initial)
     else:
         return initial
-
-#sim = simplify(('^', ('/', '1', ('^', 'x', '2')), '3'))
-#print(sim)
-#ptd = pow_to_div(sim)
-#print(ptd)

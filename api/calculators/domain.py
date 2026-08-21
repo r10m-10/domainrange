@@ -1,7 +1,7 @@
 import math
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
-from .simplify import simplify, pow_to_div
+from .simplify import simplify, pow_to_div, float_to_frac, convert_to_str
 
 binary_ops = {
     '+': lambda a, b: a + b, 
@@ -46,28 +46,26 @@ def get_constraints(node):
         return constraints
     elif len(node) == 2:
         op, child = node
-        if contains_var(child):
-            child_constraints = get_constraints(child)
-            constraints.extend(child_constraints)
-            if op in ['sqrt', 'log', 'ln', 'arcsin', 'arccos', 'arcsec', 'arccosec', 'tan', 'sec', 'cosec']:
-                if op == 'sqrt':
-                    op_constraint = (child, '>=', '0')
-                    constraints.append(op_constraint)
-                elif op in ['log', 'ln']:
-                    op_constraint = (child, '>', '0')
-                    constraints.append(op_constraint)
-                elif op in ['arcsin', 'arccos']:
-                    op_constraint = [(child, '>=', '-1'), (child, '<=', '1')]
-                    constraints.extend(op_constraint)
-                elif op in ['arcsec', 'arccosec']:
-                    op_constraint = [(child, '<=', '-1'), (child, '>=', '1')]
-                    constraints.append(op_constraint)
-                #elif op in ['tan', 'sec']:
-                #    op_constraint = (child, 'excludes_periodic', math.pi/2, math.pi)
-                #    constraints.append(op_constraint)
-                #elif op == 'cosec':
-                #    op_constraint = (child, 'excludes_periodic', 0, math.pi)
-                #    constraints.append(op_constraint)
+        child_constraints = get_constraints(child)
+        constraints.extend(child_constraints)
+        if op == 'sqrt':
+            op_constraint = (child, '>=', '0')
+            constraints.append(op_constraint)
+        elif op in ['log', 'ln']:
+            op_constraint = (child, '>', '0')
+            constraints.append(op_constraint)
+        elif op in ['arcsin', 'arccos']:
+            op_constraint = [(child, '>=', '-1'), (child, '<=', '1')]
+            constraints.extend(op_constraint)
+        elif op in ['arcsec', 'arccosec']:
+            op_constraint = [(child, '<=', '-1'), (child, '>=', '1')]
+            constraints.append(op_constraint)
+        #elif op in ['tan', 'sec']:
+        #    op_constraint = (child, 'excludes_periodic', math.pi/2, math.pi)
+        #    constraints.append(op_constraint)
+        #elif op == 'cosec':
+        #    op_constraint = (child, 'excludes_periodic', 0, math.pi)
+        #    constraints.append(op_constraint)
         return constraints
     elif len(node) == 3:
         op, left, right = node
@@ -79,9 +77,11 @@ def get_constraints(node):
             if contains_var(right):
                 op_constraint = (right, '!=', '0')
                 constraints.append(op_constraint)
-        elif op == '^' and right == '0.5':
-            op_constraint = (left, '>=', '0')
-            constraints.append(op_constraint)
+        elif op == '^' and type(right) == str and right.isalpha() == False:
+            exp = float_to_frac(right)
+            if type(exp) == tuple and float(exp[2]) % 2 == 0:
+                op_constraint =  (left, '>=', '0')
+                constraints.append(op_constraint)
         return constraints
 
 def contains_var(node):
@@ -438,7 +438,7 @@ def convert_incl(interval):
     
     return (lo, hi, c_lo_incl, c_hi_incl)
 
-def normalize_domain(domain):
+def normalize(domain):
     pretty = []
     if (None, None, False, False) in domain:
             pretty.append('Φ')
@@ -460,43 +460,38 @@ def normalize_domain(domain):
                                 is_pattern = False
                                 break
                     if is_pattern and holes:
-                        pts = ', '.join(str(h) for h in holes)
+                        pts = ', '.join(convert_to_str(h) for h in holes)
                         return 'R-{' + pts + '}'
                 for j in i:
                     lo, hi, lo_incl, hi_incl = convert_incl(j)
                     if lo == hi:
-                        pretty.append('{'+str(lo)+'}')
+                        pretty.append('{'+str(convert_to_str(lo))+'}')
                     elif lo == -math.inf:
-                        pretty.append(f"(-∞, {hi}"+inclusion_ops[hi_incl])
+                        pretty.append(f"(-∞, {convert_to_str(hi)}"+inclusion_ops[hi_incl])
                     elif hi == math.inf:
-                        pretty.append(inclusion_ops[lo_incl]+f"{lo}, ∞)")
+                        pretty.append(inclusion_ops[lo_incl]+f"{convert_to_str(lo)}, ∞)")
                     else:
-                        pretty.append(inclusion_ops[lo_incl]+f"{lo}, {hi}"+inclusion_ops[hi_incl])
+                        pretty.append(inclusion_ops[lo_incl]+f"{convert_to_str(lo)}, {convert_to_str(hi)}"+inclusion_ops[hi_incl])
                     if i.index(j)<len(i)-1:
                         pretty.append('U')
             else:
                 lo, hi, lo_incl, hi_incl = convert_incl(i)
                 if lo==hi:
-                    pretty.append('{'+str(lo)+'}')
+                    pretty.append('{'+str(convert_to_str(lo))+'}')
                 elif lo == -math.inf:
-                        pretty.append(f"(-∞, {hi}"+inclusion_ops[hi_incl])
+                        pretty.append(f"(-∞, {convert_to_str(hi)}"+inclusion_ops[hi_incl])
                 elif hi == math.inf:
-                        pretty.append(inclusion_ops[lo_incl]+f"{lo}, ∞)")
+                        pretty.append(inclusion_ops[lo_incl]+f"{convert_to_str(lo)}, ∞)")
                 else:
-                    pretty.append(inclusion_ops[lo_incl]+f"{lo}, {hi}"+inclusion_ops[hi_incl])
+                    pretty.append(inclusion_ops[lo_incl]+f"{convert_to_str(lo)}, {convert_to_str(hi)}"+inclusion_ops[hi_incl])
     return ' '.join(pretty)
 
 def find_domain(exp):
     tokens = tokenize(exp)
     node = parse_add(tokens)[0]
     sim = pow_to_div(simplify(node))
-    print (sim)
     constraints = get_constraints(sim)
     intervals = solve_constraints(constraints)
     practical = intersect_interval(intervals)
-    pretty = normalize_domain(practical)
+    pretty = normalize(practical)
     return (pretty, practical)
-
-#print(find_domain('sqrt([x+2]+3)')[0])
-
-print(find_domain('sqrt(x)/(x-1)')[0])

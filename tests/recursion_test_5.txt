@@ -1,0 +1,266 @@
+node = ('+', ('-', ('+', ('*', '3', ('^', 'x', '2')), ('*', '4', ('^', 'x', '2'))), ('*', '2', 'x')), '1')
+derivative = ('+', ('-', ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))), ('+', ('*', '0', 'x'), ('*', '1', '2'))), '0')
+Expected output = ('-', ('*', '14', 'x'), '2')
+
+----------HAND WORKING THE DERIVATIVE----------
+
+op, lft, rt = '+', ('-', ('+', ('*', '3', ('^', 'x', '2')), ('*', '4', ('^', 'x', '2'))), ('*', '2', 'x')), '1'
+der_rt = '0'
+lft = ('-', ('+', ('*', '3', ('^', 'x', '2')), ('*', '4', ('^', 'x', '2'))), ('*', '2', 'x'))
+op_1, lft_1, rt_1 = '-', ('+', ('*', '3', ('^', 'x', '2')), ('*', '4', ('^', 'x', '2'))), ('*', '2', 'x')
+der_rt_1 = ('+', ('*', '0', 'x'), ('*', '1', '2'))
+op_1_1, lft_1_1, rt_1_1 = '+', ('*', '3', ('^', 'x', '2')), ('*', '4', ('^', 'x', '2'))
+op_1_1_1, lft_1_1_1, rt_1_1_1 = '*', '3', ('^', 'x', '2')
+der_lft_1_1_1 = ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3'))
+op_1_1_2, lft_1_1_2, rt_1_1_2 = '*', '4', ('^', 'x', '2')
+der_lft_1_1_2 = ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))
+der_lft_1 = ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4')))
+der_lft = ('-', ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))), ('+', ('*', '0', 'x'), ('*', '1', '2')))
+der = ('+', ('-', ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))), ('+', ('*', '0', 'x'), ('*', '1', '2'))), '0')
+
+CORRECT RESULT! der == derivative
+
+----------LEVEL 1----------
+1. op, left, right = '+', ('-', ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))), ('+', ('*', '0', 'x'), ('*', '1', '2'))), '0'
+
+----------LEVEL 2 (left_1)----------
+1. op, left, right = '-', ('+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))), ('+', ('*', '0', 'x'), ('*', '1', '2'))
+
+----------LEVEL 2 (right_1)----------
+1. type == str and isalpha == false so we simply return 0.0 back to LEVEL 1
+
+----------LEVEL 3 (left_2_l)----------
+1. op, left, right = '+', ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')), ('+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'))
+
+----------LEVEL 3 (right_2_l)----------
+1. op, left, right = '+', ('*', '0', 'x'), ('*', '1', '2')
+
+----------LEVEL 4 (left_3_l_l)----------
+1. op, left, right = '+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3')
+
+----------LEVEL 4 (right_3_l_l)----------
+1. op, left, right = '+', ('*', '0', ('^', 'x', '2')), ('*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4')
+
+----------LEVEL 4 (left_3_r_l)----------
+1. op, left, right = '*', '0', 'x'
+
+----------LEVEL 4 (right_3_r_l)----------
+1. op, left, right = '*', '1', '2'
+
+----------LEVEL 5 (left_4_l_l_l)----------
+1. op, left, right = '*', '0', ('^', 'x', '2')
+
+----------LEVEL 5 (right_4_l_l_l)----------
+1. op, left, right = '*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '3'
+
+----------LEVEL 5 (left_4_r_l_l)----------
+1. op, left, right = '*', '0', ('^', 'x', '2')
+
+----------LEVEL 5 (right_4_r_l_l)----------
+1. op, left, right = '*', ('*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'), '4'
+
+----------LEVEL 5 (left_4_l_r_l)----------
+1. type == str and isalpha == false so we simply return 0.0 back to LEVEL 4 (left_3_r_l)
+
+----------LEVEL 5 (right_4_l_r_l)----------
+1. type == str and isalpha == true so we simply return 'x' back to LEVEL 4 (left_3_r_l)
+
+----------LEVEL 5 (left_4_r_r_l)----------
+1. type == str and isalpha == false so we simply return 1.0 back to LEVEL 4 (right_3_r_l)
+
+----------LEVEL 5 (right_4_r_r_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 4 (right_3_r_l)
+
+----------LEVEL 6 (left_5_l_l_l_l)----------
+1. type == str and isalpha == false so we simply return 0.0 back to LEVEL 5 (left_4_l_l_l)
+
+----------LEVEL 6 (right_5_l_l_l_l)----------
+1. op, left, right = '^', 'x', '2'
+
+----------LEVEL 6 (left_5_r_l_l_l)----------
+1. op, left, right = '*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'
+
+----------LEVEL 6 (right_5_r_l_l_l)----------
+1. type == str and isalpha == false so we simply return 3.0 back to LEVEL 5 (right_4_l_l_l)
+
+----------LEVEL 6 (left_5_l_r_l_l)----------
+1. type == str and isalpha == false so we simply return 0.0 back to LEVEL 5 (left_4_r_l_l)
+
+----------LEVEL 6 (right_5_l_r_l_l)----------
+1. op, left, right = '^', 'x', '2'
+
+----------LEVEL 6 (left_5_r_r_l_l)----------
+1. op, left, right = '*', ('*', '2', ('^', 'x', ('-', '2', '1'))), '1'
+
+----------LEVEL 6 (right_5_r_r_l_l)----------
+1. type == str and isalpha == false so we simply return 4.0 back to LEVEL 5 (right_4_l_r_l)
+
+----------LEVEL 7 (left_6_r_l_l_l_l)----------
+1. type == str and isalpha == true so we simply return 'x' back to LEVEL 6 (right_5_l_l_l_l)
+
+----------LEVEL 7 (right_6_r_l_l_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 6 (right_5_l_l_l_l)
+
+----------LEVEL 7 (left_6_l_r_l_l_l)----------
+1. op, left, right = '*', '2', ('^', 'x', ('-', '2', '1'))
+
+----------LEVEL 7 (right_6_l_r_l_l_l)----------
+1. type == str and isalpha == false so we simply return 1.0 back to LEVEL 6 (left_5_r_l_l_l)
+
+----------LEVEL 7 (left_6_r_l_r_l_l)----------
+1. type == str and isalpha == true so we simply return 'x' back to LEVEL 6 (right_5_l_r_l_l)
+
+----------LEVEL 7 (right_6_r_l_r_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 6 (right_5_l_r_l_l)
+
+----------LEVEL 7 (left_6_l_r_r_l_l)----------
+1. op, left, right = '*', '2', ('^', 'x', ('-', '2', '1'))
+
+----------LEVEL 7 (right_6_l_r_r_l_l)----------
+1. type == str and isalpha == false so we simply return 1.0 back to LEVEL 6 (left_5_r_r_l_l)
+
+----------LEVEL 8 (left_7_l_l_r_l_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 7 (left_6_l_r_l_l_l)
+
+----------LEVEL 8 (right_7_l_l_r_l_l_l)----------
+1. op, left, right = '^', 'x', ('-', '2', '1')
+
+----------LEVEL 8 (left_7_l_l_r_r_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 7 (left_6_l_r_r_l_l)
+
+----------LEVEL 8 (right_7_l_l_r_r_l_l)----------
+1. op, left, right = '^', 'x', ('-', '2', '1')
+
+----------LEVEL 9 (left_8_r_l_l_r_l_l_l)----------
+1. type == str and isalpha == true so we simply return 'x' back to LEVEL 8 (right_7_l_l_r_l_l_l)
+
+----------LEVEL 9 (right_8_r_l_l_r_l_l_l)----------
+1. op, left, right = '-', '2', '1'
+
+----------LEVEL 9 (left_8_r_l_l_r_r_l_l)----------
+1. type == str and isalpha == true so we simply return 'x' back to LEVEL 8 (right_7_l_l_r_r_l_l)
+
+----------LEVEL 9 (right_8_r_l_l_r_r_l_l)----------
+1. op, left, right = '-', '2', '1'
+
+----------LEVEL 10 (left_9_r_r_l_l_r_l_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 9 (right_8_r_l_l_r_l_l_l)
+
+----------LEVEL 10 (right_9_r_r_l_l_r_l_l_l)----------
+1. type == str and isalpha == false so we simply return 1.0 back to LEVEL 9 (right_8_r_l_l_r_l_l_l)
+
+----------LEVEL 10 (left_9_r_r_l_l_r_r_l_l)----------
+1. type == str and isalpha == false so we simply return 2.0 back to LEVEL 9 (right_8_r_l_l_r_r_l_l)
+
+----------LEVEL 10 (right_9_r_r_l_l_r_r_l_l)----------
+1. type == str and isalpha == false so we simply return 1.0 back to LEVEL 9 (right_8_r_l_l_r_r_l_l)
+
+----------LEVEL 9 (right_8_r_l_l_r_r_l_l) CONT.----------
+2. op = '-', left = 2.0, right = 1.0
+3. since left == right == float, we simply do left - right = 2.0 - 1.0 = 1.0
+4. return 1.0 to LEVEL 8 (right_7_l_l_r_r_l_l)
+
+----------LEVEL 9 (right_8_r_l_l_r_l_l_l) CONT.----------
+2. op = '-', left = 2.0, right = 1.0
+3. since left == right == float, we simply do left - right = 2.0 - 1.0 = 1.0
+4. return 1.0 to LEVEL 8 (right_7_l_l_r_l_l_l)
+
+----------LEVEL 8 (right_7_l_l_r_l_l_l) CONT.----------
+2. op = '^', left = 'x', right = 1.0
+3. op is '^' and right = float and right = 1.0 so we return left.
+4. return 'x' to LEVEL 7 (left_6_l_r_l_l_l)
+
+----------LEVEL 8 (right_7_l_l_r_r_l_l) CONT.----------
+2. op = '^', left = 'x', right = 1.0
+3. op is '^' and right = float and right = 1.0 so we return left.
+4. return 'x' to LEVEL 7 (left_6_l_r_r_l_l)
+
+----------LEVEL 7 (left_6_l_r_r_l_l) CONT.----------
+2. op = '*', left = 2.0, right = 'x'
+3. flat = ['2', 'x'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0)] -> merged = [(2.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['2', 'x'] -> final = ('*', '2', 'x')
+4. return final = ('*', '2', 'x') to LEVEL 6 (left_5_r_r_l_l)
+
+----------LEVEL 7 (left_6_l_r_l_l_l) CONT.----------
+2. op = '*', left = 2.0, right = 'x'
+3. flat = ['2', 'x'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0)] -> merged = [(2.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['2', 'x'] -> final = ('*', '2', 'x')
+4. return final = ('*', '2', 'x') to LEVEL 6 (left_5_r_l_l_l)
+
+----------LEVEL 6 (right_5_l_l_l_l) CONT.----------
+2. op = '^', left = 'x', right = 2.0
+3. return ('^', 'x', '2') to LEVEL 5 (left_4_l_l_l)
+
+----------LEVEL 6 (right_5_l_r_l_l) CONT.----------
+2. op = '^', left = 'x', right = 2.0
+3. return ('^', 'x', '2') to LEVEL 5 (left_4_r_l_l)
+
+----------LEVEL 6 (left_5_r_l_l_l) CONT.----------
+2. op = '*', left = ('*', '2', 'x'), right = 1.0
+3. flat = ['2', 'x', '1'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0), (1.0, None, None)] -> merged = [(2.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['2', 'x'] -> final = ('*', '2', 'x')
+4. return final = ('*', '2', 'x') to LEVEL 5 (right_4_l_l_l)
+
+----------LEVEL 6 (left_5_r_r_l_l) CONT.----------
+2. op = '*', left = ('*', '2', 'x'), right = 1.0
+3. flat = ['2', 'x', '1'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0), (1.0, None, None)] -> merged = [(2.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['2', 'x'] -> final = ('*', '2', 'x')
+4. return final = ('*', '2', 'x') to LEVEL 5 (right_4_r_l_l)
+
+----------LEVEL 5 (left_4_l_l_l) CONT.----------
+2. op = '*', left = 0.0, right = ('^', 'x', '2')
+3. flat = ['0', ('^', 'x', '2')] -> terms = [(0.0, None, None), (1.0, 'x', 2.0)] -> merged = [(0.0, None, None), (1.0, 'x', 2.0)] -> nodes = ['0', ('^', 'x', '2')] -> final = 0.0
+4. return 0.0 back to LEVEL 4 (left_3_l_l)
+
+----------LEVEL 5 (left_4_r_l_l) CONT.----------
+2. op = '*', left = 0.0, right = ('^', 'x', '2')
+3. flat = ['0', ('^', 'x', '2')] -> terms = [(0.0, None, None), (1.0, 'x', 2.0)] -> merged = [(0.0, None, None), (1.0, 'x', 2.0)] -> nodes = ['0', ('^', 'x', '2')] -> final = 0.0
+4. return 0.0 back to LEVEL 4 (right_3_l_l)
+
+----------LEVEL 5 (right_4_r_l_l) CONT.----------
+2. op = '*', left = ('*', '2', 'x'), right = 4.0
+3. flat = ['2', 'x', '4'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0), (4.0, None, None)] -> merged = [(8.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['8', 'x'] -> final = ('*', '8', 'x')
+4. return final = ('*', '8', 'x') to LEVEL 4 (right_3_l_l)
+
+----------LEVEL 5 (right_4_l_l_l) CONT.----------
+2. op = '*', left = ('*', '2', 'x'), right = 3.0
+3. flat = ['2', 'x', '3'] -> terms = [(2.0, None, None), (1.0, 'x', 1.0), (3.0, None, None)] -> merged = [(6.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['6', 'x'] -> final = ('*', '6', 'x')
+4. return final = ('*', '6', 'x') to LEVEL 4 (left_3_l_l)
+
+----------LEVEL 4 (left_3_l_l) CONT.----------
+2. op = '+', left = 0.0, right = ('*', '6', 'x')
+3. flat = ['0', ('*', '6', 'x')] -> terms = [(0.0, None, None), (6.0, 'x', 1.0)] -> merged = [(0.0, None, None), (6.0, 'x', 1.0)] -> nodes = ['0', ('*', '6', 'x')] -> final = ('*', '6', 'x')
+4. return final = ('*', '6', 'x') to LEVEL 3 (left_2_l)
+
+----------LEVEL 4 (right_3_l_l) CONT.----------
+2. op = '+', left = 0.0, right = ('*', '8', 'x')
+3. flat = ['0', ('*', '8', 'x')] -> terms = [(0.0, None, None), (8.0, 'x', 1.0)] -> merged = [(0.0, None, None), (8.0, 'x', 1.0)] -> nodes = ['0', ('*', '8', 'x')] -> final = ('*', '8', 'x')
+4. return final = ('*', '8', 'x') to LEVEL 3 (left_2_l)
+
+----------LEVEL 4 (left_3_r_l) CONT.----------
+2. op = '*', left = 0.0, right = 'x'
+3. flat = ['0', 'x'] -> terms = [(0.0, None, None), (1.0, 'x', 1.0)] -> merged = [(0.0, None, None), (1.0, 'x', 1.0)] -> nodes = ['0', 'x'] -> final = 0.0
+4. return final = 0.0 to LEVEL 3 (right_2_l)
+
+----------LEVEL 4 (right_3_r_l) CONT.----------
+2. op = '*', left = 1.0, right = 2.0
+3. flat = ['1', '2'] -> terms = [(1.0, None, None), (2.0, None, None)] -> merged = [(2.0, None, None)] -> nodes = ['2'] -> final = 2.0
+4. return final = 2.0 to LEVEL 3 (right_2_l)
+
+----------LEVEL 3 (left_2_l) CONT.----------
+2. op = '+', left = ('*', '6', 'x'), right = ('*', '8', 'x')
+3. flat = [('*', '6', 'x'), ('*', '8', 'x')] -> terms = [(6.0, 'x', 1.0), (8.0, 'x', 1.0)] -> merged = [(14.0, 'x', 1.0)] -> nodes = [('*', '14', 'x')] -> final = ('*', '14', 'x')
+4. return final = ('*', '14', 'x') to LEVEL 2 (left_1)
+
+----------LEVEL 3 (right_2_l)----------
+2. op = '+', left = 0.0, right = 2.0
+3. flat = ['0', '2'] -> terms = [(0.0, None, None), (2.0, None, None)] -> merged = [(2.0, None, None)] -> nodes = ['2'] -> final = 2.0
+4. return final = 2.0 to LEVEL 2 (left_1)
+
+----------LEVEL 2 (left_1)----------
+2. op = '-', left = ('*', '14', 'x'), right = 2.0
+3. flat = [('*', '14', 'x'), '-2'] -> terms = [(14.0, 'x', 1.0), (-2.0, None, None)] -> merged = [(14.0, 'x', 1.0), (-2.0, None, None)] -> nodes = [('*', '14', 'x'), '-2'] -> final = ('-', ('*', '14', 'x'), '2')
+4. return final = ('-', ('*', '14', 'x'), '2') to LEVEL 1
+
+----------LEVEL 1----------
+2. op = '+', left = ('-', ('*', '14', 'x'), '2'), right = 0.0
+3. flat = [('*', '14', 'x'), '-2', '0'] -> terms = [(14.0, 'x', 1.0), (-2.0, None, None), (0.0, None, None)] -> merged = [(14.0, 'x', 1.0), (-2.0, None, None)] -> nodes = [('*', '14', 'x'), '-2'] -> final = ('-', ('*', '14', 'x'), '2')
+4. return final = ('-', ('*', '14', 'x'), '2') as the final answer
+
+ANSWER MATCHES!

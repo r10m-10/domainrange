@@ -1,0 +1,92 @@
+There are 3 main cases:
+
+1. When index 0 has a list and index 1 has a tuple
+2. When index 1 has a list and index 0 has a tuple
+3. When index 0 and 1 both have a list
+
+For case-1, we can take an example of [A,B,C], D where all A, B, C and D are tuples. This case means (A ∪ B ∪ C) ∩ D 
+=> (A∩D) ∪ (B∩D) ∪ (C∩D). I can turn this into [A,D] ∪ [B,D] ∪ [C,D] where I could send each [] into intersect_intervals()
+and then send the result of it into union_intervals.
+
+For case-2, we have to do the exact same thing  as case 1, only the order is reversed.
+
+For case-3, we can take the example [A,B], [C,D,E]. Expanded: (A∩C) ∪ (A∩D) ∪ (A∩E) ∪ (B∩C) ∪ (B∩D) ∪ (B∩E).
+It would be good to have a helper function called distribute_interval which takes 2 inputs and returns a single list with
+distributed intervals
+
+[A, B, C, D], E
+AUE-> False, BUE-> False, CUE-> True => [F, A, B, D]
+union [F, A, B, D]-> FUA-> False => [[F,A], B, D]
+again [F,A], B => FUB-> False, BUA-> False => [F, A, B] => union this list now => FUA-> False => [[F,A], B]
+then again [F,A], B => FUB-> False, BUA-> False => [F, A, B] => FUA-> False => [[F,A], B] 
+this goes on and on infinitely
+This is a problem of infinite recursion
+
+do i need to handle 2 different cases when len(node) == 3 and when len(node) == 2. Because, right now with the else structure,
+it is always assumed that the length of node is 3 because we unpack as op, left, right so if we get a node of length 2 by mistake
+then we will get an error. If we do decide to handle both cases separately then is the logic for len == 2 same as 3 just
+unpacking is the point of difference?
+
+No, I do not handle this the same way as I handle when len(node) == 3. That is because, when len(node)==2, the
+basic presumption of flatten is that we are trying to flatten mainly for operators '+' and '*' and when len(node) == 2, the
+op can never be '+' or '*' and therefore there should be a fundamentally different way of handling the case when len(node) == 2
+i.e. simply return the current node as a list because there is nothing to flatten there.
+
+Now, this calls for another question, what if there is a case when there is another flatten case nested inside another. For
+example: ('*', ('sin', (('+',('*', '2', ('*', '2', 'x')), '1'))), ('*', ('+', ('*', ('*', '4', 'x'), 5), '1')))
+This is a pretty long example but according to the current flatten logic, the output would be:
+[('sin', (('+', ('*', '2', ('*', '2', 'x')), '1'))), ('+', ('*', ('*', '4', 'x'), '5'), '1')]
+I think this means that flatten will be a helper function inside of a bigger and more complex solving function which will
+call flatten on nodes and solve them.
+
+ok, We will basically be running flatten inside simply_initial when op is 
+either '+' or '*'. Now i need to figure out when and where should flatten run to correctly flatten the output of the recursion
+that is taking place in simplify_initial.
+
+Now, I also have the doubt that flatten will produce a node so we still need another wrapper function for simplify that
+takes the output of simplify and then solves it and then it also refactors it into a complte node so tht it can be sucessfully
+returned as part of the recursive pattern of simplify_initial. This is because simplify_initial cannot operate on lists.
+
+I have just made the collect_and_reduce function. This function takes in the flattened list and then combines all the numerical
+values in the list to give a single numerical value and also returns all the non-numerical stuff as well so that we can easily
+form the node again. Basiclly what I have done in this is that we first of all separate the flat list into 2 different list:
+first one is the nums list where all the numerical values are stored as floats and the second is the symbols values where all 
+the non-numerical values like variables and nodes are stored. Then we check if there even are any numerical values in the list
+or not by checking if len(nums) == 0, we return None and if it is not 0 then we move onto the next step. The next step is to
+combine all the numerical values into one. To do this, we first of all get the very first number in the list and store it as
+the variable 'calc'. Then we iterate through the list from index 1 to end of list. This is done so that we can iteratively 
+perform the given operation on all the numbers inside the nums list. To merge everything into a single value, we keep
+re-defining the variable calc as binary_ops[op](i, calc). This means we are multiplying the current number 'i' with the
+previous number 'calc' and then saving it as calc again so that the 'previous number' is updated and we are always merging
+after this we simply return both calc and symbols. The next steps would be to make a funciton to rebuild the node.
+
+For the rebuild function, my idea is that if len(symbols) == 1, we simply return the node ('*', str(calc), symbols[0])
+or a better option would be to just simply use a for loop. My idea is that i will first use a for loop to make the basic
+symbols node. We will do:
+
+This whole simplification logic is really really backfiring. basically what I first thought was that simplification was
+just removing all the temporary zeros and ones that were generated by the derivative itself. Then i thought of increasing
+the initial scope to support some other things like the main problem was that ('*', '2', ('*', '2', 'x')) should be instead
+solved to 4 * x which i did achieve but then i found out there are a lot more simplification cases like x - 3x which should be
+simplified to -2x and for that i had to build an approach which would take the coefficient and then operate on the cofficient
+for the same bases for addition. Therefore, for x the coeff is 1 and then for 3x the coeff should be 3 but instead i had to make
+another edit such that in flatten, with op = '+' all binary subtraction expression are turned into additive unary negative 
+expressions such that x - 3x turns into x + (-3x). Now, all this actually worked but the main problem was that now the flattened
+list looks like ['x', ('*', '-1', ('*', '3', 'x'))] which means i cannot reliably extract the coefficient now and i first have
+to handle the recursuve case of flattening the node again, turning ('*', '-1', ('*', '3', 'x')) to the flattened version
+['-1', '3', 'x'] and then i would have to run it back through combine where it would be formed as calc = -3 and symbols = 'x'
+and then reform it back into a node ('*', '-3', 'x') and after that can i actually extract the coefficients and compare the
+bases of the two expressions which would be 1 and -3 and calculate them according to the op => '+' to finally give -2 as calc
+and 'x' as symbols and then reform that again into ('*', '-2', 'x') to solve it but that is just for this one case and not as I
+keep have to adding code upon code, I just want to now back off a bit and think about what i am even doing because I am again
+just going into basic algebra because there are many of these base cases like x^2/x is just x but right now my derivative
+calculator seels x^2/x just as x and then applies quotient rule to it which is bad because the answer is simply 1 for it.
+I really have to think of my stratergy here.
+
+in the case of the node ('*', '3', ('*', '2', ('^', 'x', '2'))) if we first unpack it correctly and then for right we do:
+l = []
+fl_right = flatten(right)
+for i in fl_right:
+    term = to_term(i)
+    l.append(term)
+then l will be [(2.0, None, None), (1.0, 'x', 2.0)] so now what do i do with this list?
