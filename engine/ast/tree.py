@@ -62,11 +62,9 @@ def draw_lines(tree):
 
 def render_expression(exp):
     tokens = tokenize(exp)
-    parsed = parse_add(tokens, 0)[0]
+    parsed = parse_add(tokens)[0]
     tree = assign_positions(parsed, 0, 0, 0, {})[4]
     nodes = draw_nodes(tree)
     lines = draw_lines(tree)
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="850" height="650"> {lines} {nodes} </svg>'
-    with open("tree.svg", 'w') as f:
-        f.write(svg)
     return svg

@@ -1,12 +1,8 @@
-from api.calculators.domain import find_domain
-from api.ast.tree import render_expression
 from flask import Flask, request, jsonify, render_template
+from api.routes.home import home_bp
+from api.routes.ast_routes import ast_bp
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-if __name__ == "__main__":
-    app.run(debug=True)
+app.register_blueprint(home_bp)
+app.register_blueprint(ast_bp)
