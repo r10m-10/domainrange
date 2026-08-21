@@ -5,10 +5,12 @@ from .simplify import simplify, flatten, form_term, merge_terms, form_node, rebu
 
 def differentiate_unsim(node):
     if type(node)==str:
-        if node.isdigit() or '.' in node or (node[0] == '-' and node[1:].isdigit()) or (node[0]=='-' and node[1] =='.'):
+        try:
+            float(node)
             return '0'
-        elif node.isalpha():
-            return '1'
+        except (ValueError, TypeError):
+            if node.isalpha():
+                return '1'
     elif len(node)==3:
         op, left, right = node
         if op in '+-':
@@ -52,6 +54,12 @@ def differentiate_unsim(node):
             return ('*', ('/', '1', child), differentiate_unsim(child))
         elif op == 'log':
             return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate_unsim(child))
+        elif op == 'abs':
+            return ('*', ('/', child, ('abs', child)), differentiate_unsim(child))
+        elif op == 'frac':
+            return differentiate_unsim(child)
+        elif op == 'gif':
+            return '0'
 
 def differentiate(exp):
     tokens = tokenize(exp)
