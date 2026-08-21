@@ -16,7 +16,7 @@
         <a href="{{ url_for('domain.calculate_domain_page') }}">Domain</a>
         <a href="{{ url_for('range.calculate_range_page') }}">Range</a>
         <a href="{{ url_for('derivative.calculate_derivative_page') }}">Derivative</a>
-        <a href="#">Simplify</a>
+        <a href="{{ url_for('simplify.simplify_page') }}">Simplify</a>
     </nav>
     <main>
         {% block body %}{% endblock %}

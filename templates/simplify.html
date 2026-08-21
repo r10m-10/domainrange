@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block head %}
-<title>Derivative Calculator</title>
+<title>Simplify</title>
 {% endblock %}
 {% block body %}
-<h1> DERIVATIVE CALCULATOR </h1>
+<h1> SIMPLIFY </h1>
 <input type="text" id="exp-input" placeholder="Enter an expression...">
 <div id="result"></div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/exp_input.js')}}"></script>
-<script src="{{ url_for('static', filename='js/derivative_calc.js')}}"></script>
+<script src="{{ url_for('static', filename='js/simplify.js')}}"></script>
 {% endblock %}
