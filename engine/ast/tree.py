@@ -37,7 +37,7 @@ def get_pixel_coords(x, depth):
     pixel_x = margin+x*x_spacing
     pixel_y = margin+depth*y_spacing
 
-    return pixel_x, pixel_y 
+    return (pixel_x, pixel_y)
 
 def draw_nodes(tree):
     nodes = []
@@ -63,8 +63,13 @@ def draw_lines(tree):
 def render_expression(exp):
     tokens = tokenize(exp)
     parsed = parse_add(tokens)[0]
-    tree = assign_positions(parsed, 0, 0, 0, {})[4]
+    result = assign_positions(parsed, 0, 0, 0, {})
+    tree = result[4]
+    max_x = result[3] - 1
+    max_depth = max(node['depth'] for node in tree.values())
+    width = get_pixel_coords(max_x, 0)[0]+margin
+    height = get_pixel_coords(0, max_depth)[1]+margin 
     nodes = draw_nodes(tree)
     lines = draw_lines(tree)
-    svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="850" height="650"> {lines} {nodes} </svg>'
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"> {lines} {nodes} </svg>'
     return svg
