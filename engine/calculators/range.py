@@ -135,6 +135,3 @@ def find_range(exp, window = 20):
     if partial:
         pretty += '  (partial: some boundary values could not be resolved)'
     return pretty, merged, partial
-
-pretty, merged, partial = find_range('sqrt(x-2)')
-print(pretty, merged, partial)
