@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1> AST GENERATOR </h1>
+<input type="text" id="exp-input" placeholder="Enter an expression...">
+<div id="result"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exp_input.js')}}"></script>
+<script src="{{ url_for('static', filename='js/ast_generator.js')}}"></script>
+{% endblock %}
