@@ -4,11 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css' )}}">
     {% block head %}{% endblock %}
 </head>
 
 <body>
-    {% block body %}{% endblock %}
+    <nav>
+        <a href="{{ url_for('home.index') }}">Home</a>
+        <a href="{{ url_for('ast.ast_generator_page') }}">AST Generator</a>
+        <a href="{{ url_for('ast.ast_visualizer_page') }}">AST Visualizer</a>
+        <a href="#">Domain</a>
+        <a href="#">Range</a>
+        <a href="#">Derivative</a>
+        <a href="#">Simplify</a>
+    </nav>
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
 </body>
 
 </html>
