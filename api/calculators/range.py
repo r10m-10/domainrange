@@ -17,7 +17,7 @@ def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
     samples = [safe_evaluate(node,i) for i in chk]
     samples = [s for s in samples if s is not None]
 
-    if len(samples) < 2:
+    if len(samples) < len(chk):
         return ('undetermined', None)
 
     diffs = [abs(samples[i+1] - samples[i]) for i in range(len(samples) - 1)]
@@ -36,12 +36,21 @@ def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
 
     return ('undetermined', None)
 
+def flatten_domain(domain):
+    flat = []
+    for i in domain:
+        if type(i) == list:
+            flat.extend(flatten_domain(i))
+        else:
+            flat.append(i)
+    return flat
+
 def find_range(exp, window = 20):
     tokens = tokenize(exp)
     node = parse_add(tokens)[0]
     node = simplify(node)
 
-    domain = find_domain(exp)[1]
+    domain = flatten_domain(find_domain(exp)[1])
     der = differentiate(exp)
 
     range_pieces = []

@@ -159,6 +159,7 @@ def get_critical_points(node, lo, hi, step, tol=1e-9):
     prev_x = None
     prev_class = None
     zero_run = []
+    inb = None
     first = True
 
     while x<= hi:
@@ -186,8 +187,11 @@ def get_critical_points(node, lo, hi, step, tol=1e-9):
         prev_x, prev_class = x, cls
         first = False
         x+=step
-    if zero_run and inb is not None:
-        critical_points.append(inb)
+    if zero_run:
+        if inb is not None:
+            critical_points.append(inb)
+        else:
+            critical_points.append(round(zero_run[0], 6))
     return sorted(critical_points)
 
 def test_domain_intervals(node, inequality, rhs, critical_points):
