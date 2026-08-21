@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block head %}
-<title>Range Calculator</title>
+<title>Domain Calculator</title>
 {% endblock %}
 {% block body %}
-<h1> RANGE CALCULATOR </h1>
+<h1> DOMAIN CALCULATOR </h1>
 <input type="text" id="exp-input" placeholder="Enter an expression...">
+<button id="test-btn">Test expression: 1 / (x^2 - 4) + sqrt(x - 1)</button>
 <div id="result"></div>
+<div id="tool-nav"></div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/exp_input.js')}}"></script>
-<script src="{{ url_for('static', filename='js/range_calc.js')}}"></script>
+<script src="{{ url_for('static', filename='js/domain.js')}}"></script>
 {% endblock %}

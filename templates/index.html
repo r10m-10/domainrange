@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
-
 {% block head %}
 <title>Math Suite</title>
 {% endblock %}
-
 {% block body %}
+<h1> WELCOME TO MATHEMATICS SUITE </h1>
+<h3>ENTER AN EXPRESSION TO GET STARTED</h3>
+<input type="text" id="exp-input" placeholder="Enter an expression...">
+<div id="tool-buttons"></div>
+{% endblock %}
 
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exp_input.js')}}"></script>
+<script src="{{ url_for('static', filename='js/home.js')}}"></script>
 {% endblock %}

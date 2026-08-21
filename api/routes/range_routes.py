@@ -3,12 +3,12 @@ from engine.calculators.range import find_range
 
 range_bp = Blueprint('range', __name__)
 
-@range_bp.route('/calculate-range')
-def calculate_range_page():
-    return render_template('range_calc.html')
+@range_bp.route('/range')
+def range_page():
+    return render_template('range.html')
 
-@range_bp.route('/api/calculate-range', methods=['POST'])
-def calculate_range_api():
+@range_bp.route('/api/range', methods=['POST'])
+def range_api():
     data = request.get_json()
     exp = data.get('expression', '')
 
