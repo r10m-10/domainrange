@@ -5,10 +5,22 @@ from .simplify import simplify
 from .derivative import differentiate
 from .domain import find_domain, get_critical_points, safe_evaluate, union_intervals, normalize
 
+FIXED_RANGES = {
+    'sin':    [(-1.0, 1.0, True, True)],
+    'cos':    [(-1.0, 1.0, True, True)],
+    'sec':    [(-math.inf, -1.0, False, True), (1.0, math.inf, True, False)],
+    'cosec':  [(-math.inf, -1.0, False, True), (1.0, math.inf, True, False)],
+    'arcsin': [(-math.pi/2, math.pi/2, True, True)],
+    'arccos': [(0.0, math.pi, True, True)],
+    'arctan': [(-math.pi/2, math.pi/2, False, False)],
+    'arccot': [(0.0, math.pi, False, False)],
+}
+
 def snap(val, tol=1e-4):
-    nearest = round(val)
-    if abs(val-nearest) < tol:
-        return float(nearest)
+    for denom in (1,2,4):
+        nearest = round(val * denom) / denom
+        if abs(val-nearest) < tol:
+            return nearest
     return val
 
 def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
@@ -27,11 +39,19 @@ def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
         return ('undetermined', None)
 
     diffs = [abs(samples[i+1] - samples[i]) for i in range(len(samples) - 1)]
+    growing = all(abs(samples[i+1]) > abs(samples[i]) for i in range(len(samples) - 1))
 
-    if len(diffs) == 1 or diffs[-1] <= diffs[0]:
+    if len(diffs) == 1:
+        if growing and abs(samples[-1]) > abs(samples[0])*10:
+            if samples[-1] > 0:
+                val = math.inf
+            else:
+                val = -math.inf
+            return ('infinite', val)
         return ('finite', snap(samples[-1]))
 
-    growing = all(abs(samples[i+1]) > abs(samples[i]) for i in range(len(samples) - 1))
+    if diffs[-1] <= diffs[0]:
+        return ('finite', snap(samples[-1]))    
 
     if growing:
         if samples[-1] > 0:
@@ -57,6 +77,15 @@ def find_range(exp, window = 100):
     node = simplify(node)
 
     domain = flatten_domain(find_domain(exp)[1])
+
+    if domain == [(None, None, False, False)]:
+        return 'Φ', domain, False
+
+    if type(node) == tuple and len(node) == 2 and node[0] in FIXED_RANGES and node[1] == 'x':
+        merged = FIXED_RANGES[node[0]]
+        pretty = normalize([merged])
+        return pretty, merged, False
+    
     der = differentiate(exp)
 
     range_pieces = []
