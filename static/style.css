@@ -4,6 +4,7 @@
     --paper: #EEF1F0;
     --ink: #1A2226;
     --blueprint: #2E5F8A;
+    --graph-line: #C7D0CC;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'IBM Plex Sans', sans-serif;
@@ -41,6 +42,54 @@ button {
     cursor: pointer;
 }
 
+nav {
+    display: flex;
+    align-items: center;
+    height: var(--nav-height);
+    padding: 0 24px;
+    background-color: var(--paper);
+    border-bottom: 1px solid var(--ink);
+    gap: 20px;
+    overflow-x: auto;
+}
+
+nav a {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+nav a:hover {
+    color: var(--blueprint);
+    border-bottom-color: var(--blueprint);
+}
+
+nav a:first-child {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-right: 16px;
+    border-bottom: none;
+}
+
+nav a:first-child:hover {
+    color: var(--blueprint);
+}
+
+main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+}
+
 main h1 {
     font-family: var(--font-display);
     font-weight: 700;
@@ -50,19 +99,16 @@ main h1 {
     margin-bottom: 32px;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-    height: var(--nav-height);
-    padding: 0 24px;
-    background-color: var(--paper);
-    gap: 20px;
-}
-
-nav a {
+#exp-input {
+    display: block;
+    width: 100%;
     font-family: var(--font-mono);
-    font-size: 16px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 18px;
     color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--graph-line);
+    padding: 10px 4px 10px 28px;
+    position: relative;
+    transition: border-color 0.15s ease;
 }
