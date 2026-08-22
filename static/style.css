@@ -4,6 +4,7 @@
     --paper: #EEF1F0;
     --ink: #1A2226;
     --blueprint: #2E5F8A;
+    --blueprint-soft: #2E5F8A1a;
     --graph-line: #C7D0CC;
 
     --font-display: 'Space Grotesk', sans-serif;
@@ -11,6 +12,7 @@
     --font-mono: 'IBM Plex Mono', monospace;
 
     --nav-height: 56px;
+    --radius: 2px;
 }
 
 * {
@@ -27,7 +29,7 @@ body {
     background-color: var(--paper);
     color: var(--ink);
     font-family: var(--font-body);
-    font-size: 18px;
+    font-size: 18px; /* NEED TO DECIDE */
     line-height: 1.5;
     min-height: 100vh;
 }
@@ -55,7 +57,7 @@ nav {
 
 nav a {
     font-family: var(--font-mono);
-    font-size: 16px;
+    font-size: 16px; /* NEED TO DECIDE */
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink);
@@ -72,11 +74,11 @@ nav a:hover {
 
 nav a:first-child {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 22px;
+    font-weight: 700; /* NEED TO DECIDE */
+    font-size: 22px; /* NEED TO DECIDE */
     letter-spacing: 0.04em;
     color: var(--ink);
-    margin-right: 16px;
+    margin-right: 16px; /* NEED TO DECIDE */
     border-bottom: none;
 }
 
@@ -87,23 +89,23 @@ nav a:first-child:hover {
 main {
     max-width: 720px;
     margin: 0 auto;
-    padding: 64px 24px 96px;
+    padding: 64px 24px 96px; /* NEED TO DECIDE */
 }
 
 main h1 {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 28px;
+    font-weight: 700; /* NEED TO DECIDE */
+    font-size: 28px; /* NEED TO DECIDE */
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    margin-bottom: 32px;
+    margin-bottom: 32px; /* NEED TO DECIDE */
 }
 
 #exp-input {
     display: block;
     width: 100%;
     font-family: var(--font-mono);
-    font-size: 18px;
+    font-size: 18px; /* NEED TO DECIDE */
     color: var(--ink);
     background: transparent;
     border: none;
@@ -111,4 +113,52 @@ main h1 {
     padding: 10px 4px 10px 28px;
     position: relative;
     transition: border-color 0.15s ease;
+}
+
+#exp-input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--ink); /* NEED TO DECIDE */
+}
+
+#test-btn {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--graph-line);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+#test-btn:hover {
+    border-color: var(--ink); /* NEED TO DECIDE */
+    color: var(--blueprint);
+    background-color: var(--blueprint-soft);
+}
+
+#result svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+#result svg circle {
+    fill: #ffffff; /* NEED TO DECIDE (USER CHANGABLE COLOR?) */
+    stroke: var(--blueprint);
+    stroke-width: 1.5;
+}
+
+#result svg text {
+    font-family: var(--font-mono);
+    fill: var(--ink);
+    font-size: 13px;
+}
+
+#result svg line {
+    stroke: var(--blueprint); /* NEED TO DECIDE (USER CHANGABLE COLOR?) */
+    stroke-width: 1;
 }
