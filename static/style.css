@@ -29,6 +29,11 @@ html {
 
 body {
     background-color: var(--paper);
+    background-image: 
+        linear-gradient(var(--graph-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--graph-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 18px; /* NEED TO DECIDE */
@@ -163,7 +168,8 @@ main > input#exp-input {
     display: inline-block;
     margin-top: 14px;
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 500;
     letter-spacing: 0.03em;
     color: var(--ink);
     background: transparent;
@@ -280,4 +286,10 @@ main > input#exp-input {
 #tool-buttons button:not(:disabled):hover {
     background-color: var(--ink);
     color: var(--paper);
+}
+
+#tool-buttons button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: var(--graph-line);
 }
