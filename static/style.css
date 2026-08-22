@@ -95,6 +95,10 @@ nav a:first-child:hover {
     color: var(--blueprint);
 }
 
+nav a:not(:first-child):not(:last-child)::after {
+    content: '';
+}
+
 main {
     max-width: 720px;
     margin: 0 auto;
@@ -108,6 +112,11 @@ main h1 {
     letter-spacing: 0.03em;
     text-transform: uppercase;
     margin-bottom: 32px; /* NEED TO DECIDE */
+}
+
+.input-row,
+main > input#exp-input {
+    width: 100%;
 }
 
 #exp-input {
@@ -127,6 +136,27 @@ main h1 {
 #exp-input:focus {
     outline: none;
     border-bottom: 2px solid var(--ink); /* NEED TO DECIDE */
+}
+
+#exp-input::placeholder {
+    color: #8a9490;
+    font-style: normal;
+}
+
+.prompt-wrap {
+    position: relative;
+}
+
+.prompt-wrap::before {
+    content: '>';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--blueprint);
+    pointer-events: none;
 }
 
 #test-btn {
@@ -166,7 +196,7 @@ main h1 {
 #result:not(:empty)::before {
     content: 'OUTPUT';
     position: absolute;
-    top: -9px;
+    top: 8px;
     left: 12px;
     background-color: var(--paper);
     padding: 0, 6px;
@@ -202,4 +232,52 @@ main h1 {
 #result svg line {
     stroke: var(--blueprint); /* NEED TO DECIDE (USER CHANGABLE COLOR?) */
     stroke-width: 1;
+}
+
+#tool-nav {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+}
+
+#tool-nav button {
+    font-family: var(--font-mono);
+    font-size: 12px; /* NEED TO DECIDE */
+    letter-spacing: 0.03em;
+    color: var(--blueprint);
+    background: transparent;
+    border: 1px solid var(--blueprint);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#tool-nav button:hover {
+    background-color: var(--blueprint);
+    color: var(--paper);
+}
+
+#tool-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+}
+
+#tool-buttons button {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+#tool-buttons button:not(:disabled):hover {
+    background-color: var(--ink);
+    color: var(--paper);
 }
