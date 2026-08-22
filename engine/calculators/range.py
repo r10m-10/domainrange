@@ -5,6 +5,12 @@ from .simplify import simplify
 from .derivative import differentiate
 from .domain import find_domain, get_critical_points, safe_evaluate, union_intervals, normalize
 
+def snap(val, tol=1e-4):
+    nearest = round(val)
+    if abs(val-nearest) < tol:
+        return float(nearest)
+    return val
+
 def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
     if x == math.inf or x == -math.inf:
         if x == math.inf:
@@ -23,7 +29,7 @@ def estimate_limit(node, x, direction, offsets=(1e-2, 1e-4, 1e-6)):
     diffs = [abs(samples[i+1] - samples[i]) for i in range(len(samples) - 1)]
 
     if len(diffs) == 1 or diffs[-1] <= diffs[0]:
-        return ('finite', samples[-1])
+        return ('finite', snap(samples[-1]))
 
     growing = all(abs(samples[i+1]) > abs(samples[i]) for i in range(len(samples) - 1))
 
@@ -45,7 +51,7 @@ def flatten_domain(domain):
             flat.append(i)
     return flat
 
-def find_range(exp, window = 20):
+def find_range(exp, window = 100):
     tokens = tokenize(exp)
     node = parse_add(tokens)[0]
     node = simplify(node)
@@ -131,7 +137,10 @@ def find_range(exp, window = 20):
                     range_pieces.append((val2, val1, incl2, incl1))
 
     merged = union_intervals(range_pieces)
-    pretty = normalize(merged)
+    if len(merged) > 1:
+        pretty = normalize([merged])
+    else:
+        pretty = normalize(merged)
     if partial:
         pretty += '  (partial: some boundary values could not be resolved)'
     return pretty, merged, partial

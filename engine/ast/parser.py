@@ -33,7 +33,7 @@ def parse_pow(tokens, pos):
 
 def parse_atom(tokens, pos):
     token = tokens[pos]
-    if token in ['sqrt', 'log', 'ln', 'sin', 'cos', 'tan', 'sec', 'cosec', 'arcsin', 'arccos', 'arctan', 'arcsec', 'arccosec']:
+    if token in ['sqrt', 'log', 'ln', 'sin', 'cos', 'tan', 'sec', 'cosec', 'cot', 'arcsin', 'arccos', 'arctan', 'arcsec', 'arccosec', 'arccot']:
         pos+=2
         left, pos = parse_add(tokens, pos)
         pos+=1
