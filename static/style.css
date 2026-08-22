@@ -5,7 +5,11 @@
     --ink: #1A2226;
     --blueprint: #2E5F8A;
 
+    --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    --nav-height: 56px;
 }
 
 * {
@@ -35,4 +39,30 @@ a {
 button {
     font-family: inherit;
     cursor: pointer;
+}
+
+main h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    height: var(--nav-height);
+    padding: 0 24px;
+    background-color: var(--paper);
+    gap: 20px;
+}
+
+nav a {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
 }
