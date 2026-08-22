@@ -6,6 +6,8 @@
     --blueprint: #2E5F8A;
     --blueprint-soft: #2E5F8A1a;
     --graph-line: #C7D0CC;
+    --pencil-red: #B23A2E;
+    --verified-green: #3F7D5C;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'IBM Plex Sans', sans-serif;
@@ -42,6 +44,13 @@ a {
 button {
     font-family: inherit;
     cursor: pointer;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--blueprint);
+    outline-offset: 2px;
 }
 
 nav {
@@ -138,6 +147,38 @@ main h1 {
     border-color: var(--ink); /* NEED TO DECIDE */
     color: var(--blueprint);
     background-color: var(--blueprint-soft);
+}
+
+#result {
+    position: relative;
+    margin-top: 40px;
+    min-height: 40px;
+    border: 1px solid var(--graph-line);
+    border-radius: var(--radius);
+    background-color: #ffffffaa; /* NEED TO DECIDE */
+    padding: 28px 20px 20px;
+    font-family: var(--font-mono);
+    font-size: 15px; /* NEED TO DECIDE */
+    color: var(--ink);
+    overflow-x: auto;
+}
+
+#result:not(:empty)::before {
+    content: 'OUTPUT';
+    position: absolute;
+    top: -9px;
+    left: 12px;
+    background-color: var(--paper);
+    padding: 0, 6px;
+    font-family: var(--font-mono);
+    font-size: 11px; /* NEED TO DECIDE */
+    letter-spacing: 0.08em;
+    color: var(--ink);
+}
+
+#result p[style*="color:red"] {
+    color: var(--pencil-red) !important;
+    font-family: var(--font-body);
 }
 
 #result svg {
