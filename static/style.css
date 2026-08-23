@@ -6,6 +6,7 @@
     --blueprint: #2E5F8A;
     --blueprint-soft: #2E5F8A1a;
     --graph-line: #C7D0CC;
+    --grid-line: #c7d0cc60;
     --pencil-red: #B23A2E;
     --verified-green: #3F7D5C;
 
@@ -31,8 +32,8 @@ html {
 body {
     background-color: var(--paper);
     background-image: 
-        linear-gradient(var(--graph-line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--graph-line) 1px, transparent 1px);
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 32px 32px;
     background-position: -1px -1px;
     color: var(--ink);
@@ -184,35 +185,61 @@ main > input#exp-input {
 }
 
 #result {
-    position: relative;
-    margin-top: 40px;
     min-height: 40px;
     max-height: var(--result-max-height);
-    border: 1px solid var(--graph-line);
-    border-radius: var(--radius);
-    background-color: #ffffffaa; /* NEED TO DECIDE */
-    padding: 28px 20px 20px;
+    padding: 20px;
     font-family: var(--font-mono);
     font-size: 15px; /* NEED TO DECIDE */
     color: var(--ink);
     overflow-x: auto;
 }
 
-#result:empty {
+#result-panel {
+    margin-top: 40px;
+    border: 1.5px solid var(--graph-line);
+    border-radius: var(--radius);
+    background-color: #ffffffaa; /* NEED TO DECIDE */
+    overflow: hidden;
+}
+
+#result-panel:has(#result:empty) {
     display: none;
 }
 
-#result:not(:empty)::before {
-    content: 'OUTPUT';
-    position: absolute;
-    top: 8px;
-    left: 12px;
+#result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--graph-line);
     background-color: var(--paper);
-    padding: 0, 6px;
+}
+
+#result-label {
     font-family: var(--font-mono);
-    font-size: 11px; /* NEED TO DECIDE */
+    font-size: 15px;
     letter-spacing: 0.08em;
     color: var(--ink);
+}
+
+#download-svg-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#download-svg-btn:hover {
+    background-color: var(--ink); /* NEED TO DECIDE */
+    color: var(--paper);
 }
 
 #result p[style*="color:red"] {
@@ -248,7 +275,7 @@ main > input#exp-input {
 #tool-nav {
     display: none;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 15px;
     margin-top: 28px;
 }
 

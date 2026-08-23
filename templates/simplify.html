@@ -8,7 +8,13 @@
     <input type="text" id="exp-input" placeholder="Enter an expression...">
 </div>
 <button id="test-btn">Test expression: 2x + 3x - x^0 + 0</button>
-<div id="result"></div>
+<div id="result-panel">
+    <div id="result-header">
+        <span id="result-label">OUTPUT</span>
+        <button id="download-svg-btn" type="button" aria-label="Download SVG" title="Download SVG">⬇</button>
+    </div>
+    <div id="result"></div>
+</div>
 <div id="tool-nav"></div>
 {% endblock %}
 
