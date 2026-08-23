@@ -69,7 +69,7 @@ function setupToolNav(currentToolKey) {
   })
 
   function toggleNav() {
-    nav.style.display= input.value.trim() === '' ? 'none' : 'block'
+    nav.style.display= input.value.trim() === '' ? 'none' : 'flex'
   }
 
   toggleNav()

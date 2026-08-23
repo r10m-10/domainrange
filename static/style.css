@@ -168,9 +168,8 @@ main > input#exp-input {
     margin-top: 14px;
     font-family: var(--font-mono);
     font-size: 14px;
-    font-weight: 500;
     letter-spacing: 0.03em;
-    color: var(--ink);
+    color: var(--pencil-red);
     background: transparent;
     border: 1px solid var(--graph-line);
     border-radius: var(--radius);
@@ -197,6 +196,10 @@ main > input#exp-input {
     font-size: 15px; /* NEED TO DECIDE */
     color: var(--ink);
     overflow-x: auto;
+}
+
+#result:empty {
+    display: none;
 }
 
 #result:not(:empty)::before {
