@@ -65,7 +65,7 @@ nav {
     padding: 0 24px;
     background-color: var(--paper);
     border-bottom: 1px solid var(--ink);
-    gap: 20px;
+    gap: 18px;
     overflow-x: auto;
 }
 
@@ -92,16 +92,12 @@ nav a:first-child {
     font-size: 22px; /* NEED TO DECIDE */
     letter-spacing: 0.04em;
     color: var(--ink);
-    margin-right: 16px; /* NEED TO DECIDE */
+    margin-right: 24px; /* NEED TO DECIDE */
     border-bottom: none;
 }
 
 nav a:first-child:hover {
     color: var(--blueprint);
-}
-
-nav a:not(:first-child):not(:last-child)::after {
-    content: '';
 }
 
 main {
@@ -112,8 +108,8 @@ main {
 
 main h1 {
     font-family: var(--font-display);
-    font-weight: 700; /* NEED TO DECIDE */
-    font-size: 28px; /* NEED TO DECIDE */
+    font-weight: 500; /* NEED TO DECIDE */
+    font-size: 30px; /* NEED TO DECIDE */
     letter-spacing: 0.03em;
     text-transform: uppercase;
     margin-bottom: 32px; /* NEED TO DECIDE */
@@ -129,6 +125,7 @@ main > input#exp-input {
     width: 100%;
     font-family: var(--font-mono);
     font-size: 18px; /* NEED TO DECIDE */
+    font-weight: 500;
     color: var(--ink);
     background: transparent;
     border: none;
@@ -146,6 +143,7 @@ main > input#exp-input {
 #exp-input::placeholder {
     color: #8a9490;
     font-style: normal;
+    font-weight: lighter;
 }
 
 .prompt-wrap {
