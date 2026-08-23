@@ -15,6 +15,7 @@
 
     --nav-height: 56px;
     --radius: 2px;
+    --result-max-height: 480px;
 }
 
 * {
@@ -187,6 +188,7 @@ main > input#exp-input {
     position: relative;
     margin-top: 40px;
     min-height: 40px;
+    max-height: var(--result-max-height);
     border: 1px solid var(--graph-line);
     border-radius: var(--radius);
     background-color: #ffffffaa; /* NEED TO DECIDE */
@@ -218,6 +220,8 @@ main > input#exp-input {
 #result svg {
     display: block;
     max-width: 100%;
+    max-height: var(--result-max-height);
+    width: auto;
     height: auto;
 }
 
