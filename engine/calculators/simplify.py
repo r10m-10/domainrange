@@ -1,4 +1,5 @@
 import math
+from fractions import Fraction
 
 binary_ops = {
     '+': lambda a, b: a + b, 
@@ -356,14 +357,8 @@ def pow_to_div(node):
 def float_to_frac(num: str):
     if '.' not in num:
         return num
-    frac_num = num[num.find('.')+1:]
-    x = len(str(frac_num))
-    numr = int(float(num) * 10**x)
-    denomi = 10**x
-    hcf = math.gcd(numr, denomi)
-    numr //= hcf
-    denomi //= hcf
-    return ('/', str(numr), str(denomi))
+    frac = Fraction(float(num)).limit_denominator(1000)
+    return ('/', str(frac.numerator), str(frac.denominator))
 
 def simplify(node):
     initial = simplify_initial(node)

@@ -81,7 +81,7 @@ def find_range(exp, window = 100):
     if domain == [(None, None, False, False)]:
         return 'Φ', domain, False
 
-    if type(node) == tuple and len(node) == 2 and node[0] in FIXED_RANGES and node[1] == 'x':
+    if type(node) == tuple and len(node) == 2 and node[0] in FIXED_RANGES and type(node[1]) == str and node[1].isalpha() and len(node[1]) == 1:
         merged = FIXED_RANGES[node[0]]
         pretty = normalize([merged])
         return pretty, merged, False

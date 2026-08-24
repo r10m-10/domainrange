@@ -1,4 +1,5 @@
 import math
+from fractions import Fraction
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
 from .simplify import simplify, pow_to_div, float_to_frac, convert_to_str
@@ -8,7 +9,7 @@ binary_ops = {
     '-': lambda a, b: a - b, 
     '*': lambda a, b: a * b, 
     '/': lambda a, b: a / b, 
-    '^': lambda a, b: a**b
+    '^': lambda a, b: real_pow(a, b)
 }
 unary_ops = {
     'sqrt': math.sqrt,
@@ -39,6 +40,16 @@ comparison_ops = {
     '==': lambda a, b: a == b,
 }
 inclusion_ops = {'True_l': '[', 'False_l': '(', 'True_r': ']', 'False_r': ')'}
+
+def real_pow(base, exponent):
+    if base >= 0:
+        return base ** exponent
+    frac = Fraction(exponent).limit_denominator(1000)
+    num, den = frac.numerator, frac.denominator
+    if den % 2 == 0:
+        raise ValueError("even root of negative number")
+    sign = -1 if num % 2 != 0 else 1
+    return sign * (abs(base) ** (num / den))
 
 def get_constraints(node):
     constraints = []
