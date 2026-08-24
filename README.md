@@ -96,4 +96,22 @@ A practical example would be: `-2x + 3sin(x)`
 | Division | a/b | (3x^2)/(2sin(x^2)) |
 
 ### Rules:
-1. 
+1. Integers and decimals: `3`, `0.5`, `.5`
+
+2. Negative numbers are detected contextually. A `-` is treated as part of a number (or as unary negation) when it is at the start of the expression or right after `+ - * / ^ ( { |`. Otherwise, it's binary subtraction.
+
+3. Single letters (x, y, t, etc.) work as variables.
+
+4. implicit multiplication is not supported between letter runs. Therefore, `xy` will result in the token `'xy'` and not `x*y`.
+
+5. exponents are right associative so if you forget parenthesis then an expression like `2^3^4` would be evaluated as `2^(3^4)`.
+
+6. **Implicit multiplication:**
+
+    - digit next to letter: `3x` → `3*x`
+    - number/letter next to `(`: `2sqrt(x)`, `x(x+1)`
+    - `)` next to `(`, a digit, or a letter: `(x+1)(x-1)`, `(x+1)2`, `(x+1)x`
+
+7. Function names must match exactly as written in the syntax or else they won't work.
+
+8. Refrain from naming variables as the pre-defined functions. For example: `sin` should not be treated as a variable name.
