@@ -77,3 +77,23 @@ A practical example would be: `-2x + 3sin(x)`
 `('*', '2', ('*', ('+', 'x', '0'), '1'))` then we would get the flattened list as `['2', ('+', 'x', '0'), '1']` and when we go down the whole simplification pipeline then the ('+', 'x', '0') would never get simplified to 'x' and we will get an unsimplified result: `('*', '2', ('+', 'x', '0'))` whereas the required result is `('*', '2', 'x')` and you would be completely correct. Which is why, there is the main top level function `simplify_initial` that is responsible for the whole breaking the node and recursing and it is the one that calls the whole `flatten -> form_terms -> merge_terms -> form_node -> rebuild` pipeline and due to recursion, the ('+', 'x', '0') node gets simplified indivisually in a recursive call before it is ever available for the '*' node call. I highly recommend checking out [recursion tests 4](tests/recursion_test_4.txt) and [5](tests/recursion_test_5.txt) to get a better understanding of what I mean.
 
 7. **Range Calculator:** For this calculator, instead of sampling the function directly, we differentiate it first, find the critical points of the derivative (where the slope changes sign), and evaluate the original function only at those points plus the domain boundaries. That turns range-finding into "evaluate at a handful of meaningful points and stitch the pieces together" instead of dense brute-force sampling.
+
+## BASIC SYNTAX
+
+| **Function** | **Syntax** | **Example** |
+| :-----------:| :---------:| :----------:|
+| Trigonometric| sin(), cos(), tan(), cosec(), sec(), cot()| sin(3x^2 + 2)|
+| Inverse-Trigonometric| arcsin(), arccos(), arctan(), arccosec(), arcsec(), arccot()| arcsin(3x^2 + 2)|
+| Square root | sqrt() | sqrt(3x^2 + 2)|
+| Logarithmic | *base-10*: log(), *base-e*: ln()| log(3x^2 + 2)|
+| Absolute value | \|f(x)\| | \|3x^2 + 2\| |
+| Greatest Integer | [f(x)] | [3x^2 + 2] |
+| Fractional Part | {f(x)} | {3x^2 + 2} |
+| Exponential | a^b | x^2 |
+| Addition | a + b | x + 2 |
+| Subtraction | a - b | x - 2 |
+| Multiplication | *Explicit*: a*b, *Implicit*: ab| 2x or 2*x|
+| Division | a/b | (3x^2)/(2sin(x^2)) |
+
+### Rules:
+1. 
