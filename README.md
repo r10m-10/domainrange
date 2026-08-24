@@ -120,10 +120,12 @@ A practical example would be: `-2x + 3sin(x)`
 
 - No multivariable support. Will produce incorrect output.
 
-- Greatest Integer `[]`/ Fractional Part `{}` based functions can produce incorrect critical points in the range calculator.
+- Greatest Integer `[]` and Fractional Part `{}` based functions would produce incorrect critical points in the range calculator.
 
 - Periodicity of `tan`, `sec`, `cosec`, `cot` isn't specially handled and would produce incorrect outputs for domain and range.
 
 - Critical-point search uses a fixed window/step size rather than adapting to the function which could miss points outside of that window.
 
 - Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.
+
+- Derivative does not support Greatest Integer `[]` and Fractional Part `{}` functions.

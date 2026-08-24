@@ -56,10 +56,6 @@ def differentiate_unsim(node):
             return ('*', ('/', '1', ('*', child, ('ln', '10'))), differentiate_unsim(child))
         elif op == 'abs':
             return ('*', ('/', child, ('abs', child)), differentiate_unsim(child))
-        elif op == 'frac':
-            return differentiate_unsim(child)
-        elif op == 'gif':
-            return '0'
 
 def differentiate(exp):
     tokens = tokenize(exp)
