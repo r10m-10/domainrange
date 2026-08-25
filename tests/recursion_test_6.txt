@@ -1,0 +1,46 @@
+('/', ('+', 'x', '2'), ('/', 'x', ('+', 'x', '1')))
+
+right -> ('/', 'x', ('+', 'x', '1')):
+['x', ('^', ('+', 'x', '1'), '-1')]
+[(1.0, 'x', 1.0), (1.0, ('+', 'x', '1'), -1.0)]
+[(1.0, 'x', 1.0), (1.0, ('+', 'x', '1'), -1.0)]
+['x', ('^', ('+', 'x', '1'), '-1')]
+('*', 'x', ('^', ('+', 'x', '1'), '-1'))
+
+final -> ('/', ('+', 'x', '2'), ('*', 'x', ('^', ('+', 'x', '1'), '-1')))
+[('+', 'x', '2'), ('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')]
+[(1.0, ('+', 'x', '2'), 1.0), (1.0, ('*', 'x', ('^', ('+', 'x', '1'), '-1')), -1.0)]
+[(1.0, ('+', 'x', '2'), 1.0), (1.0, ('*', 'x', ('^', ('+', 'x', '1'), '-1')), -1.0)]
+[('+', 'x', '2'), ('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')]
+('*', ('+', 'x', '2'), ('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1'))
+
+the problem here is that when we convert the division node to pow and send this power node:
+('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')
+to simplify_initial to simplify the power, it does not get simplified as it currently does not match any cases. But, ideally
+the output for this should be ((x+2)*(x+1))/x and to do that, if we multiply the outermost power with all the other powers,
+we would get ('*', ('^', 'x', '-1'), ('^', ('+', 'x', '1'), '1')) which would further simplify to:
+('*', ('^', 'x', '-1'), ('+', 'x', '1')) which when we form the final node, we would get:
+('*', ('+', 'x', '2'), ('*', ('^', 'x', '-1'), ('+', 'x', '1'))) which passes perfectly throughout the remaining pipeline to
+produce the result ('/', ('*', ('+', 'x', '2'), ('+', 'x', '1')), 'x')
+
+Let us trace what happens right now when ('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1') is passed to simplify_initial
+left will pass through the flatten part and be simplified as:
+['x', ('^', ('+', 'x', '1'), '-1')]
+[(1.0, 'x', 1.0), (1.0, ('+', 'x', '1'), -1.0)]
+[(1.0, 'x', 1.0), (1.0, ('+', 'x', '1'), -1.0)]
+['x', ('^', ('+', 'x', '1'), '-1')]
+('*', 'x', ('^', ('+', 'x', '1'), '-1'))
+
+and right will be simply -1
+
+since op = '^', left = ('*', 'x', ('^', ('+', 'x', '1'), '-1')) and right = -1.0, we go through the '^' block
+
+type(right) == float so we enter the first if block:
+right != 1, right != 0, type(left) == tuple but left[0] != '^'
+none of the conditions satisfied so we simply go to the else block and return:
+('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')
+here is the problem and i think to solve this we just need to specially add a check under if type(left) == tuple if the op == '*'
+then we try to merge the power over into multiply.
+
+I also identified that in multiplication too we can distribute the power over multiplication and division so I will consider
+that too and make the fix handle both cases.

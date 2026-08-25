@@ -71,13 +71,25 @@ def simplify_initial(node):
                     return left
                 elif right == 0.0:
                     return 1.0
-                elif type(left) == tuple and left[0] == '^':
-                    if type(left[2]) == str and left[2].isalpha() == False:
-                        exp = convert_to_str(float(left[2]) * right)
-                        return ('^', left[1], exp)
+                elif type(left) == tuple:
+                    if left[0] == '^':
+                        if type(left[2]) == str and left[2].isalpha() == False:
+                            exp = convert_to_str(float(left[2]) * right)
+                            if exp == '1':
+                                return left[1]
+                            elif exp == '0':
+                                return 1.0
+                            else:
+                                return ('^', left[1], exp)
+                        else:
+                            exp = ('*', left[2], convert_to_str(right))
+                            return ('^', left[1], simplify(exp))
+                    elif left[0] in '*/':
+                        l = ('^', left[1], convert_to_str(right))
+                        r = ('^', left[2], convert_to_str(right))
+                        return simplify_initial((left[0], l, r))
                     else:
-                        exp = ('*', left[2], convert_to_str(right))
-                        return ('^', left[1], simplify(exp))
+                        return (op, left, convert_to_str(right))
                 else:
                     return (op, left, convert_to_str(right))
             elif type(left) == float:
@@ -366,3 +378,21 @@ def simplify(node):
         return convert_to_str(initial)
     else:
         return initial
+
+#op = '*'
+#flat = flatten(('*', 'x', ('^', ('+', 'x', '1'), '-1')), op)
+#print(flat)
+#terms = []
+#for i in flat:
+#    terms.append(form_term(i))
+#print(terms)
+#merged = merge_terms(terms, op)
+#print(merged)
+#nodes = []
+#for i in merged:
+#    nodes.append(form_node(i))
+#print(nodes)
+#final = rebuild(nodes, op)
+#print(final)
+
+print(simplify_initial(('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')))
