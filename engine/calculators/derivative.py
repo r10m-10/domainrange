@@ -63,4 +63,6 @@ def differentiate(exp):
     sim_node = simplify(node)
     der = differentiate_unsim(sim_node)
     final = pow_to_div(simplify(der))
-    return final
+    return pow_to_div(simplify(node))
+
+print(differentiate('x*(x+1)'))
