@@ -23,7 +23,9 @@ def unparse(node):
 
 def get_node(exp):
     tokens = tokenize(exp)
-    
+    node = parse_add(tokens)
+    sim = pow_to_div(simplify(node))
+    return sim
 
-
+print(get_node(''))
 print(unparse(('*', 'x', ('+', 'x', '1'))))
