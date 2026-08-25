@@ -394,5 +394,3 @@ def simplify(node):
 #print(nodes)
 #final = rebuild(nodes, op)
 #print(final)
-
-print(simplify_initial(('^', ('*', 'x', ('^', ('+', 'x', '1'), '-1')), '-1')))
