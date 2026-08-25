@@ -37,17 +37,23 @@ def unparse(node):
         left_unparsed = unparse(left)
         right_unparsed = unparse(right)
 
-        if op in '+-':
-            return f"{left_unparsed} {op} {right_unparsed}"
-        elif op in '*/':
-            if type(left) == type(right) == tuple and len(left) == len(right) == 3 and ((left[0] in '+-' and right[0] in '+-') or op == '/'):
-                return f"({left_unparsed}) {op} ({right_unparsed})"
-            elif (type(left) == type(right) == tuple and len(left) == 3 and len(right) == 2) or (type(left) == tuple and left[0] in '+-') or (op == '/' and type(left) == tuple and len(left) == 3):
-                return f"({left_unparsed}) {op} {right_unparsed}"
-            elif (type(left) == type(right) == tuple and len(left) == 2 and len(right) == 3) or (type(right) == tuple and right[0] in '+-') or (op == '/' and type(right) == tuple and len(right) == 3):
-                return f"{left_unparsed} {op} ({right_unparsed})"
-            elif (type(left) == type(right) == tuple and len(left) == len(right) == 2) or (type(left) == type(right) == str) or (type(left) == str and (type(right) == tuple and len(right) == 2)) or (type(right) == str and (type(left) == tuple and len(left) == 2)) or (op == '*' and type(left) == tuple and left[0] == '*' and (type(right) == str or (type(right) == tuple and len(right) == 2))):
-                return f"{left_unparsed} {op} {right_unparsed}"
+        if needs_paren(left, op, 'left'):
+            left_unparsed = f"({left_unparsed})"
+        if needs_paren(right, op, 'right'):
+            right_unparsed = f"({right_unparsed})"
+
+        return f"{left_unparsed} {op} {right_unparsed}"
+    elif len(node) == 2:
+        op, child = node
+        child_unparsed = unparse(child)
+        if op == 'abs':
+            return f"|{child_unparsed}|"
+        elif op == 'frac':
+            return f"{{{child_unparsed}}}"
+        elif op == 'gif':
+            return f"[{child_unparsed}]"
+        else:
+            return f"{op}({child_unparsed})"
 
 def get_node(exp):
     tokens = tokenize(exp)
@@ -55,6 +61,39 @@ def get_node(exp):
     sim = pow_to_div(simplify(node))
     return sim
 
-node = get_node('(x+2)/(x+3) * (x+1)/(x+4)')
-print(node)
-print(unparse(node))
+test_cases = [
+    # Group 1: same-precedence chains, - and / (non-associative)
+    ('-', ('-', 'a', 'b'), 'c'),                          # 1: a - b - c
+    ('-', 'a', ('-', 'b', 'c')),                          # 2: a - (b - c)
+    ('/', ('/', 'a', 'b'), 'c'),                          # 3: a / b / c
+    ('/', 'a', ('/', 'b', 'c')),                          # 4: a / (b / c)
+
+    # Group 2: same-precedence chains, + and * (associative/commutative)
+    ('+', ('+', 'a', 'b'), 'c'),                          # 5: a + b + c
+    ('+', 'a', ('+', 'b', 'c')),                          # 6: a + b + c
+    ('*', ('*', 'a', 'b'), 'c'),                          # 7: a * b * c
+    ('*', 'a', ('*', 'b', 'c')),                          # 8: a * b * c
+
+    # Group 3: ^ (right-associative, mirror of -/ /)
+    ('^', ('^', 'a', 'b'), 'c'),                          # 9: (a ^ b) ^ c
+    ('^', 'a', ('^', 'b', 'c')),                          # 10: a ^ b ^ c
+
+    # Group 4: cross-precedence
+    ('*', ('+', 'a', 'b'), 'c'),                          # 11: (a + b) * c
+    ('+', ('*', 'a', 'b'), 'c'),                          # 12: a * b + c
+    ('/', ('+', 'a', 'b'), ('-', 'c', 'd')),              # 13: (a + b) / (c - d)
+
+    # Group 5: three-levels-deep chains
+    ('-', ('-', ('-', 'a', 'b'), 'c'), 'd'),              # 14: a - b - c - d
+    ('-', 'a', ('-', 'b', ('-', 'c', 'd'))),              # 15: a - (b - (c - d))
+    ('^', 'a', ('^', 'b', ('^', 'c', 'd'))),              # 16: a ^ b ^ c ^ d
+
+    # Group 6: function calls and brackets mixed with ops
+    ('*', ('sin', 'x'), ('cos', 'y')),                    # 17: sin(x) * cos(y)
+    ('/', ('abs', ('-', 'a', 'b')), 'c'),                 # 18: |a - b| / c
+    ('-', ('frac', 'x'), 'y'),                            # 19: {x} - y
+
+    # Group 7: asymmetric siblings
+    ('-', ('+', 'a', 'b'), ('*', 'c', 'd')),              # 20: (a + b) - c * d
+    ('/', ('*', 'a', 'b'), ('+', 'c', 'd')),              # 21: a * b / (c + d)
+]
