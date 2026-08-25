@@ -1,7 +1,8 @@
 from ..ast.tokenizer import tokenize
 from ..ast.parser import parse_add
 from .domain import contains_var
-from .simplify import simplify, flatten, form_term, merge_terms, form_node, rebuild, pow_to_div
+from .simplify import simplify, pow_to_div
+from ..ast.unparse import unparse
 
 def differentiate_unsim(node):
     if type(node)==str:
@@ -62,5 +63,6 @@ def differentiate(exp):
     node = parse_add(tokens)[0]
     sim_node = simplify(node)
     der = differentiate_unsim(sim_node)
-    final = pow_to_div(simplify(der))
+    ptd = pow_to_div(simplify(der))
+    final = unparse(ptd)
     return final

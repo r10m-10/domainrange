@@ -1,5 +1,6 @@
 import math
 from fractions import Fraction
+from ..ast.unparse import unparse
 
 binary_ops = {
     '+': lambda a, b: a + b, 
@@ -379,18 +380,7 @@ def simplify(node):
     else:
         return initial
 
-#op = '*'
-#flat = flatten(('*', 'x', ('^', ('+', 'x', '1'), '-1')), op)
-#print(flat)
-#terms = []
-#for i in flat:
-#    terms.append(form_term(i))
-#print(terms)
-#merged = merge_terms(terms, op)
-#print(merged)
-#nodes = []
-#for i in merged:
-#    nodes.append(form_node(i))
-#print(nodes)
-#final = rebuild(nodes, op)
-#print(final)
+def simplified_str(node):
+    sim = pow_to_div(simplify(node))
+    final = unparse(sim)
+    return final

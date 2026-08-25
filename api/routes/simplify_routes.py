@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from engine.ast.tokenizer import tokenize
 from engine.ast.parser import parse_add
-from engine.calculators.simplify import simplify
+from engine.calculators.simplify import simplified_str
 
 sim_bp = Blueprint('simplify', __name__)
 
@@ -17,7 +17,7 @@ def simplify_api():
     node = parse_add(tokens)[0]
 
     try:
-        sim = simplify(node)
+        sim = simplified_str(node)
         return jsonify({'success': True, 'sim': str(sim)})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
