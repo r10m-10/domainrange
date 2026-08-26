@@ -7,22 +7,45 @@
 <h1>GUIDE</h1>
 
 <section class="guide-section">
-    <p>Math Suite is a symbolic math toolkit with six different tools, all using the same expression syntax. Everything is built from a hand-written tokenizer and parser to form <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">ASTs</a>. Simply type in an expression and pick a tool to get started.</p>
+    <p>Math Suite is a symbolic math toolkit with six different tools, all using the same expression syntax. Everything is built from a hand-written tokenizer and parser to form <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Definition of AST" target="_blank" rel="noopener noreferrer">ASTs</a>. Simply type in an expression and pick a tool to get started.</p>
 </section>
 
 <section class="guide-section">
-    <h2>TOOLS</h2>
+    <h2>Tools</h2>
     <div class="doc-panel">
         <div class="doc-panel-header"><span>FEATURES</span></div>
         <ul class="feature-list">
             <li><strong>AST Generator</strong> — See the raw parsed structure behind an expression.</li>
-            <li><strong>AST Visualizer</strong> — View an expression as a <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">tree</a> diagram. <b>Downloadable</b> as SVG.</li>
-            <li><strong>Domain Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Domain_of_a_function">domain</a> of a function</li>
-            <li><strong>Range Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Range_of_a_function">range</a> of a function.</li>
-            <li><strong>Derivative Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Derivative">derivative</a> of a function.</li>
+            <li><strong>AST Visualizer</strong> — View an expression as a <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Example Tree structure" target="_blank" rel="noopener noreferrer">tree</a> diagram. <b>Downloadable</b> as SVG.</li>
+            <li><strong>Domain Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Domain_of_a_function" title="Definition of Domain" target="_blank" rel="noopener noreferrer">domain</a> of a function</li>
+            <li><strong>Range Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Range_of_a_function" title="Definition of Range" target="_blank" rel="noopener noreferrer">range</a> of a function.</li>
+            <li><strong>Derivative Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Derivative" target="_blank" rel="noopener noreferrer">derivative</a> of a function.</li>
             <li><strong>Simplify</strong> — collapse a messy expression into its cleanest form</li>
         </ul>
     </div>
+</section>
+
+<section class="guide-section">
+    <h2>Syntax Rules</h2>
+    <table class="doc-table">
+        <thead>
+            <tr><th>Function</th><th>Syntax</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Trigonometric</td><td>sin(), cos(), tan(), cosec(), sec(), cot()</td><td>sin(3x^2 + 2)</td></tr>
+            <tr><td>Inverse-trigonometric</td><td>arcsin(), arccos(), arctan(), arccosec(), arcsec(), arccot()</td><td>arcsin(3x^2 + 2)</td></tr>
+            <tr><td>Square root</td><td>sqrt()</td><td>sqrt(3x^2 + 2)</td></tr>
+            <tr><td>Logarithmic</td><td>base-10: log(), base-e: ln()</td><td>log(3x^2 + 2)</td></tr>
+            <tr><td>Absolute value</td><td>|f(x)|</td><td>|3x^2 + 2|</td></tr>
+            <tr><td>Greatest integer</td><td>[f(x)]</td><td>[3x^2 + 2]</td></tr>
+            <tr><td>Fractional part</td><td>{f(x)}</td><td>{3x^2 + 2}</td></tr>
+            <tr><td>Exponential</td><td>a^b</td><td>x^2</td></tr>
+            <tr><td>Addition</td><td>a + b</td><td>x + 2</td></tr>
+            <tr><td>Subtraction</td><td>a - b</td><td>x - 2</td></tr>
+            <tr><td>Multiplication</td><td>explicit: a*b, implicit: ab</td><td>2x or 2*x</td></tr>
+            <tr><td>Division</td><td>a/b</td><td>(3x^2)/(2sin(x^2))</td></tr>
+        </tbody>
+    </table>
 </section>
 
 {% endblock %}
