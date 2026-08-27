@@ -32,10 +32,22 @@
             <li><strong>Simplify</strong> — collapse a messy expression into its cleanest form</li>
         </ul>
     </div>
+
+    <div class="doc-panel">
+        <div class="doc-panel-header"><span>LIMITATIONS</span></div>
+        <ul class="feature-list">
+            <li>No multivariable support. Will produce incorrect output.</li>
+            <li>Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> based functions would produce incorrect critical points in the range calculator.</li>
+            <li>Periodicity of <code>tan</code>, <code>sec</code>, <code>cosec</code>, <code>cot</code> isn't specially handled and would produce incorrect outputs for domain and range.</li>
+            <li>Critical-point search uses a fixed window/step size rather than adapting to the function which could miss points outside of that window.</li>
+            <li>Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.</li>
+            <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> functions.</li>
+        </ul>
+    </div>
 </section>
 
 <section class="guide-section">
-    <h2>Syntax Rules</h2>
+    <h2>Syntax</h2>
     <table class="doc-table">
         <thead>
             <tr>
@@ -107,7 +119,10 @@
             </tr>
         </tbody>
     </table>
+</section>
 
+<section class="guide-section">
+    <h2>Rules</h2>
     <ol class="doc-rules">
         <li>Integers and decimals: <code>3</code>, <code>0.5</code>, <code>.5</code></li>
         <li><code>-</code> is unary negation at the start of an expression or right after <code>+ - * / ^ ( { |</code>.
@@ -118,7 +133,7 @@
         <li>Exponents are right-associative: <code>2^3^4</code> maens <code>2^(3^4)</code>.</li>
         <li>
             Implicit multiplication:
-            <ul>
+            <ul id="implicit-rules">
                 <li>digit next to letter: <code>3x</code> → <code>3*x</code></li>
                 <li>
                     number/letter next to <code>(</code>:
@@ -136,18 +151,6 @@
     </ol>
 </section>
 
-    <section class="guide-section">
-        <h2>Limitations</h2>
-        <ul class="doc-rules">
-            <li>No multivariable support. Will produce incorrect output.</li>
-            <li>Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> based functions would produce incorrect critical points in the range calculator.</li>
-            <li>Periodicity of <code>tan</code>, <code>sec</code>, <code>cosec</code>, <code>cot</code> isn't specially handled and would produce incorrect outputs for domain and range.</li>
-            <li>Critical-point search uses a fixed window/step size rather than adapting to the function which could miss points outside of that window.</li>
-            <li>Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.</li>
-            <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> functions.</li>
-        </ul>
-    </section>
-
-<p class="guide-footer">Curious how the parser, unparser, or simplifier actually work internally? <a href="https://github.com/r10m-10/mathsuite" target="_blank" rel="noopener noreferrer">Read the full writeup on GitHub</a>.</p>
+<p class="guide-footer">Curious how the parser, unparser, or simplifier actually work internally? <a href="https://github.com/r10m-10/mathsuite" target="_blank" rel="noopener noreferrer">Read the full documentation on GitHub</a>.</p>
 
 {% endblock %}
