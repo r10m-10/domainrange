@@ -35,9 +35,7 @@
         <a href="{{ url_for('derivative.derivative_page') }}">Derivative</a>
         <span class="sep">•</span>
         <a href="{{ url_for('simplify.simplify_page') }}">Simplify</a>
-        <a href="{{ url_for('guide.guide_page') }}">
-            <button id="guide-btn">Guide</button>
-        </a>
+        <a href="{{ url_for('guide.guide_page') }}" id="guide-btn">Guide</a>
     </nav>
     <main>
         {% block body %}{% endblock %}

@@ -463,16 +463,6 @@ main > input#exp-input {
     color: var(--ink);
 }
 
-.doc-rules {
-    padding-left: 20px;
-    margin-bottom: 16px;
-}
-
-.doc-rules li {
-    margin-bottom: 8px;
-    font-size: 15px;
-}
-
 .guide-footer {
     margin-top: 48px;
     padding-top: 20px;
