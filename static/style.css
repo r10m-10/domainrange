@@ -342,3 +342,49 @@ main > input#exp-input {
 .guide-section p {
     margin-bottom: 12px;
 }
+
+.doc-panel {
+    border: 1.5px solid var(--graph-line);
+    border-radius: var(--radius);
+    background-color: #ffffffaa;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.doc-panel-header {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--graph-line);
+    background-color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+}
+
+.doc-panel p,
+.doc-panel ul {
+    padding: 0 20px;
+}
+
+.doc-panel p:first-of-type {
+    padding-top: 16px;
+}
+
+.doc-panel > *:last-child {
+    padding-bottom: 20px;
+}
+
+.feature-list {
+    list-style: none;
+}
+
+.feature-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--graph-line);
+    font-family: var(--font-body);
+    font-size: 14px;
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
