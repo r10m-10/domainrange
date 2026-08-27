@@ -380,6 +380,10 @@ main > input#exp-input {
     list-style: none;
 }
 
+.rules-list {
+    list-style: decimal;
+}
+
 .feature-list li {
     padding: 8px 0;
     border-bottom: 1px solid var(--graph-line);

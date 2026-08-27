@@ -37,11 +37,15 @@
         <div class="doc-panel-header"><span>LIMITATIONS</span></div>
         <ul class="feature-list">
             <li>No multivariable support. Will produce incorrect output.</li>
-            <li>Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> based functions would produce incorrect critical points in the range calculator.</li>
-            <li>Periodicity of <code>tan</code>, <code>sec</code>, <code>cosec</code>, <code>cot</code> isn't specially handled and would produce incorrect outputs for domain and range.</li>
-            <li>Critical-point search uses a fixed window/step size rather than adapting to the function which could miss points outside of that window.</li>
+            <li>Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> based functions would produce
+                incorrect critical points in the range calculator.</li>
+            <li>Periodicity of <code>tan</code>, <code>sec</code>, <code>cosec</code>, <code>cot</code> isn't specially
+                handled and would produce incorrect outputs for domain and range.</li>
+            <li>Critical-point search uses a fixed window/step size rather than adapting to the function which could
+                miss points outside of that window.</li>
             <li>Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.</li>
-            <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> functions.</li>
+            <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code>
+                functions.</li>
         </ul>
     </div>
 </section>
@@ -59,63 +63,65 @@
         <tbody>
             <tr>
                 <td>Trigonometric</td>
-                <td>sin(), cos(), tan(), cosec(), sec(), cot()</td>
-                <td>sin(3x^2 + 2)</td>
+                <td> <code>sin()</code>, <code>cos()</code>, <code>tan()</code>, <code>cosec()</code>,
+                    <code>sec()</code>, <code>cot()</code></td>
+                <td><code>sin(3x^2)</code></td>
             </tr>
             <tr>
                 <td>Inverse-trigonometric</td>
-                <td>arcsin(), arccos(), arctan(), arccosec(), arcsec(), arccot()</td>
-                <td>arcsin(3x^2 + 2)</td>
+                <td><code>arcsin()</code>, <code>arccos()</code>, <code>arctan()</code>, <code>arccosec()</code>,
+                    <code>arcsec()</code>, <code>arccot()</code></td>
+                <td><code>arcsin(3x^2)</code></td>
             </tr>
             <tr>
                 <td>Square root</td>
-                <td>sqrt()</td>
-                <td>sqrt(3x^2 + 2)</td>
+                <td><code>sqrt()</code></td>
+                <td><code>sqrt(3x^2)</code></td>
             </tr>
             <tr>
                 <td>Logarithmic</td>
-                <td>base-10: log(), base-e: ln()</td>
-                <td>log(3x^2 + 2)</td>
+                <td>base-10: <code>log()</code>, base-e: <code>ln()</code></td>
+                <td><code>log(3x^2)</code></td>
             </tr>
             <tr>
                 <td>Absolute value</td>
-                <td>|f(x)|</td>
-                <td>|3x^2 + 2|</td>
+                <td><code>|f(x)|</code></td>
+                <td><code>|3x^2 + 2|</code></td>
             </tr>
             <tr>
                 <td>Greatest integer</td>
-                <td>[f(x)]</td>
-                <td>[3x^2 + 2]</td>
+                <td><code>[f(x)]</code></td>
+                <td><code>[3x^2 + 2]</code></td>
             </tr>
             <tr>
                 <td>Fractional part</td>
-                <td>{f(x)}</td>
-                <td>{3x^2 + 2}</td>
+                <td><code>{f(x)}</code></td>
+                <td><code>{3x^2 + 2}</code></td>
             </tr>
             <tr>
                 <td>Exponential</td>
-                <td>a^b</td>
-                <td>x^2</td>
+                <td><code>a^b</code></td>
+                <td><code>x^2</code></td>
             </tr>
             <tr>
                 <td>Addition</td>
-                <td>a + b</td>
-                <td>x + 2</td>
+                <td><code>a + b</code></td>
+                <td><code>x + 2</code></td>
             </tr>
             <tr>
                 <td>Subtraction</td>
-                <td>a - b</td>
-                <td>x - 2</td>
+                <td><code>a - b</code></td>
+                <td><code>x - 2</code></td>
             </tr>
             <tr>
                 <td>Multiplication</td>
-                <td>explicit: a*b, implicit: ab</td>
-                <td>2x or 2*x</td>
+                <td>explicit: <code>a*b</code>, implicit: <code>ab</code></td>
+                <td><code>2x</code> or <code>2*x</code></td>
             </tr>
             <tr>
                 <td>Division</td>
-                <td>a/b</td>
-                <td>(3x^2)/(2sin(x^2))</td>
+                <td><code>a/b</code></td>
+                <td><code>(3x)/(2x)</code></td>
             </tr>
         </tbody>
     </table>
@@ -123,34 +129,41 @@
 
 <section class="guide-section">
     <h2>Rules</h2>
-    <ol class="doc-rules">
-        <li>Integers and decimals: <code>3</code>, <code>0.5</code>, <code>.5</code></li>
-        <li><code>-</code> is unary negation at the start of an expression or right after <code>+ - * / ^ ( { |</code>.
-            Otherwise, It's binary subtraction.</li>
-        <li>Single letters (<code>x</code>, <code>y</code>, <code>t</code>, ...) work as variables</li>
-        <li>Implicit multiplication does not apply between letter runs — <code>xy</code> is one token, not
-            <code>x*y</code>.</li>
-        <li>Exponents are right-associative: <code>2^3^4</code> maens <code>2^(3^4)</code>.</li>
-        <li>
-            Implicit multiplication:
-            <ul id="implicit-rules">
-                <li>digit next to letter: <code>3x</code> → <code>3*x</code></li>
-                <li>
-                    number/letter next to <code>(</code>:
-                    <code>2sqrt(x)</code>, <code>x(x+1)</code>
-                </li>
-                <li>
-                    <code>)</code> next to <code>(</code>, a digit, or a letter:
-                    <code>(x+1)(x-1)</code>, <code>(x+1)2</code>,
-                    <code>(x+1)x</code>
-                </li>
-            </ul>
-        </li>
-        <li>Function names must match exactly as written above.</li>
-        <li>Avoid naming variables the same as predefined functions (e.g. don't use <code>sin</code> as a variable).</li>
-    </ol>
+    <div class="doc-panel">
+        <div class="doc-panel-header"><span>SYNTAX RULES</span></div>
+        <ul class="rules-list feature-list">
+            <li>Integers and decimals: <code>3</code>, <code>0.5</code>, <code>.5</code></li>
+            <li><code>-</code> is unary negation at the start of an expression or right after
+                <code>+ - * / ^ ( { |</code>.
+                Otherwise, It's binary subtraction.</li>
+            <li>Single letters (<code>x</code>, <code>y</code>, <code>t</code>, ...) work as variables</li>
+            <li>Implicit multiplication does not apply between letter runs — <code>xy</code> is one token, not
+                <code>x*y</code>.
+            </li>
+            <li>Exponents are right-associative: <code>2^3^4</code> maens <code>2^(3^4)</code>.</li>
+            <li>
+                Implicit multiplication:
+                <ul id="implicit-rules">
+                    <li>digit next to letter: <code>3x</code> → <code>3*x</code></li>
+                    <li>
+                        number/letter next to <code>(</code>:
+                        <code>2sqrt(x)</code>, <code>x(x+1)</code>
+                    </li>
+                    <li>
+                        <code>)</code> next to <code>(</code>, a digit, or a letter:
+                        <code>(x+1)(x-1)</code>, <code>(x+1)2</code>,
+                        <code>(x+1)x</code>
+                    </li>
+                </ul>
+            </li>
+            <li>Function names must match exactly as written above.</li>
+            <li>Avoid naming variables the same as predefined functions (e.g. don't use <code>sin</code> as a variable).</li>
+        </ul>
+    </div>
 </section>
 
-<p class="guide-footer">Curious how the parser, unparser, or simplifier actually work internally? <a href="https://github.com/r10m-10/mathsuite" target="_blank" rel="noopener noreferrer">Read the full documentation on GitHub</a>.</p>
+<p class="guide-footer">Curious how the parser, unparser, or simplifier actually work internally? <a
+        href="https://github.com/r10m-10/mathsuite" target="_blank" rel="noopener noreferrer">Read the full
+        documentation on GitHub</a>.</p>
 
 {% endblock %}
