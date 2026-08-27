@@ -7,7 +7,10 @@
 <h1>GUIDE</h1>
 
 <section class="guide-section">
-    <p>Math Suite is a symbolic math toolkit with six different tools, all using the same expression syntax. Everything is built from a hand-written tokenizer and parser to form <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Definition of AST" target="_blank" rel="noopener noreferrer">ASTs</a>. Simply type in an expression and pick a tool to get started.</p>
+    <p>Math Suite is a symbolic math toolkit with six different tools, all using the same expression syntax. Everything
+        is built from a hand-written tokenizer and parser to form <a
+            href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Definition of AST" target="_blank"
+            rel="noopener noreferrer">ASTs</a>. Simply type in an expression and pick a tool to get started.</p>
 </section>
 
 <section class="guide-section">
@@ -16,10 +19,16 @@
         <div class="doc-panel-header"><span>FEATURES</span></div>
         <ul class="feature-list">
             <li><strong>AST Generator</strong> — See the raw parsed structure behind an expression.</li>
-            <li><strong>AST Visualizer</strong> — View an expression as a <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Example Tree structure" target="_blank" rel="noopener noreferrer">tree</a> diagram. <b>Downloadable</b> as SVG.</li>
-            <li><strong>Domain Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Domain_of_a_function" title="Definition of Domain" target="_blank" rel="noopener noreferrer">domain</a> of a function</li>
-            <li><strong>Range Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Range_of_a_function" title="Definition of Range" target="_blank" rel="noopener noreferrer">range</a> of a function.</li>
-            <li><strong>Derivative Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Derivative" target="_blank" rel="noopener noreferrer">derivative</a> of a function.</li>
+            <li><strong>AST Visualizer</strong> — View an expression as a <a
+                    href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" title="Example Tree structure"
+                    target="_blank" rel="noopener noreferrer">tree</a> diagram. <b>Downloadable</b> as SVG.</li>
+            <li><strong>Domain Calculator</strong> — Find the <a
+                    href="https://en.wikipedia.org/wiki/Domain_of_a_function" title="Definition of Domain"
+                    target="_blank" rel="noopener noreferrer">domain</a> of a function</li>
+            <li><strong>Range Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Range_of_a_function"
+                    title="Definition of Range" target="_blank" rel="noopener noreferrer">range</a> of a function.</li>
+            <li><strong>Derivative Calculator</strong> — Find the <a href="https://en.wikipedia.org/wiki/Derivative"
+                    target="_blank" rel="noopener noreferrer">derivative</a> of a function.</li>
             <li><strong>Simplify</strong> — collapse a messy expression into its cleanest form</li>
         </ul>
     </div>
@@ -29,23 +38,114 @@
     <h2>Syntax Rules</h2>
     <table class="doc-table">
         <thead>
-            <tr><th>Function</th><th>Syntax</th><th>Example</th></tr>
+            <tr>
+                <th>Function</th>
+                <th>Syntax</th>
+                <th>Example</th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>Trigonometric</td><td>sin(), cos(), tan(), cosec(), sec(), cot()</td><td>sin(3x^2 + 2)</td></tr>
-            <tr><td>Inverse-trigonometric</td><td>arcsin(), arccos(), arctan(), arccosec(), arcsec(), arccot()</td><td>arcsin(3x^2 + 2)</td></tr>
-            <tr><td>Square root</td><td>sqrt()</td><td>sqrt(3x^2 + 2)</td></tr>
-            <tr><td>Logarithmic</td><td>base-10: log(), base-e: ln()</td><td>log(3x^2 + 2)</td></tr>
-            <tr><td>Absolute value</td><td>|f(x)|</td><td>|3x^2 + 2|</td></tr>
-            <tr><td>Greatest integer</td><td>[f(x)]</td><td>[3x^2 + 2]</td></tr>
-            <tr><td>Fractional part</td><td>{f(x)}</td><td>{3x^2 + 2}</td></tr>
-            <tr><td>Exponential</td><td>a^b</td><td>x^2</td></tr>
-            <tr><td>Addition</td><td>a + b</td><td>x + 2</td></tr>
-            <tr><td>Subtraction</td><td>a - b</td><td>x - 2</td></tr>
-            <tr><td>Multiplication</td><td>explicit: a*b, implicit: ab</td><td>2x or 2*x</td></tr>
-            <tr><td>Division</td><td>a/b</td><td>(3x^2)/(2sin(x^2))</td></tr>
+            <tr>
+                <td>Trigonometric</td>
+                <td>sin(), cos(), tan(), cosec(), sec(), cot()</td>
+                <td>sin(3x^2 + 2)</td>
+            </tr>
+            <tr>
+                <td>Inverse-trigonometric</td>
+                <td>arcsin(), arccos(), arctan(), arccosec(), arcsec(), arccot()</td>
+                <td>arcsin(3x^2 + 2)</td>
+            </tr>
+            <tr>
+                <td>Square root</td>
+                <td>sqrt()</td>
+                <td>sqrt(3x^2 + 2)</td>
+            </tr>
+            <tr>
+                <td>Logarithmic</td>
+                <td>base-10: log(), base-e: ln()</td>
+                <td>log(3x^2 + 2)</td>
+            </tr>
+            <tr>
+                <td>Absolute value</td>
+                <td>|f(x)|</td>
+                <td>|3x^2 + 2|</td>
+            </tr>
+            <tr>
+                <td>Greatest integer</td>
+                <td>[f(x)]</td>
+                <td>[3x^2 + 2]</td>
+            </tr>
+            <tr>
+                <td>Fractional part</td>
+                <td>{f(x)}</td>
+                <td>{3x^2 + 2}</td>
+            </tr>
+            <tr>
+                <td>Exponential</td>
+                <td>a^b</td>
+                <td>x^2</td>
+            </tr>
+            <tr>
+                <td>Addition</td>
+                <td>a + b</td>
+                <td>x + 2</td>
+            </tr>
+            <tr>
+                <td>Subtraction</td>
+                <td>a - b</td>
+                <td>x - 2</td>
+            </tr>
+            <tr>
+                <td>Multiplication</td>
+                <td>explicit: a*b, implicit: ab</td>
+                <td>2x or 2*x</td>
+            </tr>
+            <tr>
+                <td>Division</td>
+                <td>a/b</td>
+                <td>(3x^2)/(2sin(x^2))</td>
+            </tr>
         </tbody>
     </table>
+
+    <ol class="doc-rules">
+        <li>Integers and decimals: <code>3</code>, <code>0.5</code>, <code>.5</code></li>
+        <li><code>-</code> is unary negation at the start of an expression or right after <code>+ - * / ^ ( { |</code>.
+            Otherwise, It's binary subtraction.</li>
+        <li>Single letters (<code>x</code>, <code>y</code>, <code>t</code>, ...) work as variables</li>
+        <li>Implicit multiplication does not apply between letter runs — <code>xy</code> is one token, not
+            <code>x*y</code>.</li>
+        <li>Exponents are right-associative: <code>2^3^4</code> maens <code>2^(3^4)</code>.</li>
+        <li>
+            Implicit multiplication:
+            <ul>
+                <li>digit next to letter: <code>3x</code> → <code>3*x</code></li>
+                <li>
+                    number/letter next to <code>(</code>:
+                    <code>2sqrt(x)</code>, <code>x(x+1)</code>
+                </li>
+                <li>
+                    <code>)</code> next to <code>(</code>, a digit, or a letter:
+                    <code>(x+1)(x-1)</code>, <code>(x+1)2</code>,
+                    <code>(x+1)x</code>
+                </li>
+            </ul>
+        </li>
+        <li>Function names must match exactly as written above.</li>
+        <li>Avoid naming variables the same as predefined functions (e.g. don't use <code>sin</code> as a variable).</li>
+    </ol>
+
+    <section class="guide-section">
+        <h2>Limitations</h2>
+        <ul class="doc-rules">
+            <li>No multivariable support. Will produce incorrect output.</li>
+            <li>Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> based functions would produce incorrect critical points in the range calculator.</li>
+            <li>Periodicity of <code>tan</code>, <code>sec</code>, <code>cosec</code>, <code>cot</code> isn't specially handled and would produce incorrect outputs for domain and range.</li>
+            <li>Critical-point search uses a fixed window/step size rather than adapting to the function which could miss points outside of that window.</li>
+            <li>Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.</li>
+            <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> functions.</li>
+        </ul>
+    </section>
 </section>
 
 {% endblock %}
