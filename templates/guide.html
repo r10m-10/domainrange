@@ -4,7 +4,7 @@
 {% endblock %}
 {% block body %}
 
-<h1>GUIDE</h1>
+<h1>Guide</h1>
 
 <section class="guide-section">
     <p>Math Suite is a symbolic math toolkit with six different tools, all using the same expression syntax. Everything
@@ -134,6 +134,7 @@
         <li>Function names must match exactly as written above.</li>
         <li>Avoid naming variables the same as predefined functions (e.g. don't use <code>sin</code> as a variable).</li>
     </ol>
+</section>
 
     <section class="guide-section">
         <h2>Limitations</h2>
@@ -146,6 +147,7 @@
             <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code> functions.</li>
         </ul>
     </section>
-</section>
+
+<p class="guide-footer">Curious how the parser, unparser, or simplifier actually work internally? <a href="https://github.com/r10m-10/mathsuite" target="_blank" rel="noopener noreferrer">Read the full writeup on GitHub</a>.</p>
 
 {% endblock %}
