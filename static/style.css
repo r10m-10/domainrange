@@ -474,3 +474,28 @@ main > input#exp-input {
 #implicit-rules {
     margin-left: 40px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
+
+@media (max-width: 600px) {
+    nav {
+        gap: 14px;
+        padding: 0 16px;
+    }
+
+    main {
+        padding: 40px 16px 64px;
+    }
+
+    main h1 {
+        font-size: 22px;
+    }
+
+    #exp-input {
+        font-size: 16px;
+    }
+}
