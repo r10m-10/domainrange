@@ -38,7 +38,7 @@ body {
     background-position: -1px -1px;
     color: var(--ink);
     font-family: var(--font-body);
-    font-size: 18px; /* NEED TO DECIDE */
+    font-size: 18px;
     line-height: 1.5;
     min-height: 100vh;
 }
@@ -73,7 +73,7 @@ nav {
 
 nav a {
     font-family: var(--font-mono);
-    font-size: 16px; /* NEED TO DECIDE */
+    font-size: 16px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink);
@@ -90,11 +90,11 @@ nav a:hover {
 
 nav a:first-child {
     font-family: var(--font-display);
-    font-weight: 700; /* NEED TO DECIDE */
-    font-size: 22px; /* NEED TO DECIDE */
+    font-weight: 700;
+    font-size: 22px;
     letter-spacing: 0.04em;
     color: var(--ink);
-    margin-right: 24px; /* NEED TO DECIDE */
+    margin-right: 24px;
     border-bottom: none;
 }
 
@@ -102,19 +102,44 @@ nav a:first-child:hover {
     color: var(--blueprint);
 }
 
+nav a:last-child {
+    border-bottom: none;
+    margin-left: 138px;
+}
+
+#guide-btn {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--graph-line);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+#guide-btn:hover {
+    border-color: var(--ink);
+    color: var(--paper);
+    background-color: var(--ink);
+}
+
 main {
     max-width: 720px;
     margin: 0 auto;
-    padding: 64px 24px 96px; /* NEED TO DECIDE */
+    padding: 64px 24px 96px;
 }
 
 main h1 {
     font-family: var(--font-display);
-    font-weight: 500; /* NEED TO DECIDE */
-    font-size: 30px; /* NEED TO DECIDE */
+    font-weight: 500;
+    font-size: 30px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    margin-bottom: 32px; /* NEED TO DECIDE */
+    margin-bottom: 32px;
 }
 
 .input-row,
@@ -126,7 +151,7 @@ main > input#exp-input {
     display: block;
     width: 100%;
     font-family: var(--font-mono);
-    font-size: 18px; /* NEED TO DECIDE */
+    font-size: 18px;
     font-weight: 500;
     color: var(--ink);
     background: transparent;
@@ -139,7 +164,7 @@ main > input#exp-input {
 
 #exp-input:focus {
     outline: none;
-    border-bottom: 2px solid var(--ink); /* NEED TO DECIDE */
+    border-bottom: 2px solid var(--ink);
 }
 
 #exp-input::placeholder {
@@ -179,7 +204,7 @@ main > input#exp-input {
 }
 
 #test-btn:hover {
-    border-color: var(--ink); /* NEED TO DECIDE */
+    border-color: var(--blueprint);
     color: var(--blueprint);
     background-color: var(--blueprint-soft);
 }
@@ -189,7 +214,7 @@ main > input#exp-input {
     max-height: var(--result-max-height);
     padding: 20px;
     font-family: var(--font-mono);
-    font-size: 15px; /* NEED TO DECIDE */
+    font-size: 15px;
     color: var(--ink);
     overflow-x: auto;
 }
@@ -198,7 +223,7 @@ main > input#exp-input {
     margin-top: 40px;
     border: 1.5px solid var(--graph-line);
     border-radius: var(--radius);
-    background-color: #ffffffaa; /* NEED TO DECIDE */
+    background-color: #ffffffaa;
     overflow: hidden;
 }
 
@@ -238,7 +263,7 @@ main > input#exp-input {
 }
 
 #download-svg-btn:hover {
-    background-color: var(--ink); /* NEED TO DECIDE */
+    background-color: var(--ink);
     color: var(--paper);
 }
 
@@ -281,7 +306,7 @@ main > input#exp-input {
 
 #tool-nav button {
     font-family: var(--font-mono);
-    font-size: 12px; /* NEED TO DECIDE */
+    font-size: 12px;
     letter-spacing: 0.03em;
     color: var(--blueprint);
     background: transparent;
