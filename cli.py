@@ -1,10 +1,11 @@
 from engine.ast.tokenizer import tokenize
 from engine.ast.parser import parse_add
 from engine.ast.tree import download_svg_cli
+from engine.ast.unparse import unparse
 from engine.calculators.derivative import differentiate
 from engine.calculators.domain import find_domain
 from engine.calculators.range import find_range
-from engine.calculators.simplify import simplify
+from engine.calculators.simplify import simplify, pow_to_div
 
 print('''1. Enter
 2. Quit''')
@@ -107,7 +108,39 @@ Output:''')
 1. Continue
 2. Quit''')
         in_ch = int(input("> "))
+
+    elif tool == 5:
+        print('''
+----------DERIVATIVE----------''')
+        print('''Info: Find the derivative of entered expression.
+''')
+        print('''Enter Expression:''')
+        exp = str(input(">  "))
+        print('''
+Output:''')
+        print(unparse(differentiate(exp)))
+        print('''
+1. Continue
+2. Quit''')
+        in_ch = int(input("> "))
+
+    elif tool == 6:
+        print('''
+----------DERIVATIVE----------''')
+        print('''Info: Simplify the entered expression.
+''')
+        print('''Enter Expression:''')
+        exp = str(input(">  "))
+        print('''
+Output:''')
+        tokens = tokenize(exp)
+        node = parse_add(tokens)[0]
+        print(unparse(pow_to_div(simplify(node))))
+        print('''
+1. Continue
+2. Quit''')
+        in_ch = int(input("> "))
     
-    if tool == 7:
+    elif tool == 7:
         in_ch = 2
         break
