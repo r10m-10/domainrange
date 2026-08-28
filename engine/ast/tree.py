@@ -43,7 +43,7 @@ def draw_nodes(tree, node_color="skyblue", text_color="black"):
     nodes = []
     for i in tree.values():
         x, y = get_pixel_coords(i['x'], i['depth'])
-        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="{node_color}" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" stroke="{text_color}" dominant-baseline="middle">{i['label']}</text>'
+        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="{node_color}" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" fill="{text_color}" dominant-baseline="middle">{i['label']}</text>'
         nodes.append(svg)
     return " ".join(nodes)
 
