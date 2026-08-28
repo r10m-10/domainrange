@@ -39,15 +39,15 @@ def get_pixel_coords(x, depth):
 
     return (pixel_x, pixel_y)
 
-def draw_nodes(tree):
+def draw_nodes(tree, node_color="skyblue", text_color="black"):
     nodes = []
     for i in tree.values():
         x, y = get_pixel_coords(i['x'], i['depth'])
-        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="skyblue" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" dominant-baseline="middle">{i['label']}</text>'
+        svg = f'<circle cx="{x}" cy="{y}" r="25" fill="{node_color}" stroke="black" /> <text x="{x}" y="{y}" text-anchor="middle" stroke="{text_color}" dominant-baseline="middle">{i['label']}</text>'
         nodes.append(svg)
     return " ".join(nodes)
 
-def draw_lines(tree):
+def draw_lines(tree, line_color="white"):
     lines = []
     for i in tree.values():
         if 'children' in i:
@@ -56,11 +56,11 @@ def draw_lines(tree):
             for j in children:
                 child = tree[j]
                 x2, y2 = get_pixel_coords(child['x'], child['depth'])
-                line = f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="white" />'
+                line = f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{line_color}" />'
                 lines.append(line)
     return " ".join(lines)
 
-def render_expression(exp):
+def render_expression(exp, node_color="skyblue", text_color="black", line_color="white"):
     tokens = tokenize(exp)
     parsed = parse_add(tokens)[0]
     result = assign_positions(parsed, 0, 0, 0, {})
@@ -69,7 +69,12 @@ def render_expression(exp):
     max_depth = max(node['depth'] for node in tree.values())
     width = get_pixel_coords(max_x, 0)[0]+margin
     height = get_pixel_coords(0, max_depth)[1]+margin 
-    nodes = draw_nodes(tree)
-    lines = draw_lines(tree)
+    nodes = draw_nodes(tree, node_color, text_color)
+    lines = draw_lines(tree, line_color)
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}"> {lines} {nodes} </svg>'
     return svg
+
+def download_svg_cli(exp, node_color="skyblue", text_color="black", line_color="white"):
+    svg = render_expression(exp, node_color, text_color, line_color)
+    with open("tree.svg", 'w') as f:
+        f.write(svg)
