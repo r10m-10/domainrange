@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from engine.calculators.derivative import differentiate
+from engine.ast.unparse import unparse
 
 der_bp = Blueprint('derivative', __name__)
 
@@ -13,7 +14,7 @@ def derivative_api():
     exp = data.get('expression', '')
 
     try:
-        der = differentiate(exp)
+        der = unparse(differentiate(exp))
         return jsonify({'success': True, 'der': str(der)})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400

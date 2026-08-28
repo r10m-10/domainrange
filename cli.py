@@ -39,6 +39,7 @@ Output:''')
 2. Quit''')
         in_ch = int(input("> "))
         continue
+
     elif tool == 2:
         print('''
 ----------AST VISUALIZER----------''')
@@ -53,13 +54,60 @@ Select node color:
 ''')
         node_color_inp = int(input(">  "))
         node_color = "skyblue" if node_color_inp == 1 else str(input("Enter hex color: "))
-        tokens = tokenize(exp)
-        print(parse_add(tokens)[0])
+        print('''
+Select text color:
+1. black (default)
+2. Custom color (Enter hex value only)
+''')
+        text_color_inp = int(input(">  "))
+        text_color = "black" if text_color_inp == 1 else str(input("Enter hex color: "))
+        print('''
+Select line color:
+1. white (default)
+2. Custom color (Enter hex value only)
+''')
+        line_color_inp = int(input(">  "))
+        line_color = "white" if line_color_inp == 1 else str(input("Enter hex color: "))
+        download_svg_cli(exp, node_color, text_color, line_color)
+        print('''
+tree.svg installed successfully!''')
         print('''
 1. Continue
 2. Quit''')
         in_ch = int(input("> "))
         continue
+
+    elif tool == 3:
+        print('''
+----------DOMAIN----------''')
+        print('''Info: Find the domain of entered expression.
+''')
+        print('''Enter Expression:''')
+        exp = str(input(">  "))
+        print('''
+Output:''')
+        print(find_domain(exp)[0])
+        print('''
+1. Continue
+2. Quit''')
+        in_ch = int(input("> "))
+        continue
+
+    elif tool == 4:
+        print('''
+----------RANGE----------''')
+        print('''Info: Find the range of entered expression.
+''')
+        print('''Enter Expression:''')
+        exp = str(input(">  "))
+        print('''
+Output:''')
+        print(find_range(exp)[0])
+        print('''
+1. Continue
+2. Quit''')
+        in_ch = int(input("> "))
+    
     if tool == 7:
         in_ch = 2
         break

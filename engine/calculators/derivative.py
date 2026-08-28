@@ -63,6 +63,5 @@ def differentiate(exp):
     node = parse_add(tokens)[0]
     sim_node = simplify(node)
     der = differentiate_unsim(sim_node)
-    ptd = pow_to_div(simplify(der))
-    final = unparse(ptd)
+    final = pow_to_div(simplify(der))
     return final

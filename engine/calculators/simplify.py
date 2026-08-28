@@ -379,8 +379,3 @@ def simplify(node):
         return convert_to_str(initial)
     else:
         return initial
-
-def simplified_str(node):
-    sim = pow_to_div(simplify(node))
-    final = unparse(sim)
-    return final
