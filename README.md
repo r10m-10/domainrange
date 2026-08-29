@@ -29,6 +29,20 @@ In total, there are **6 features**:
 
 - **Simplify:** constant folding, like-term collection across nested chains, identity collapsing (×1, +0, ^0, etc.)
 
+## CLI TOOL
+
+Prefer the terminal? Math Suite also ships with a simple and stripped-down CLI tool for the simple people. no Python, Flask, or dependencies required.
+
+### Download
+
+Grab the latest binary for your OS from [Releases](https://github.com/r10m-10/mathsuite/releases):
+- `mathsuite-cli-linux` (Linux)
+- `mathsuite-cli-win.exe` (Windows)
+
+### Usage
+
+Run the executables and navigate the menu by entering the number for the required option.
+
 ## LOCAL SETUP
 
 ### Requirements:
@@ -128,7 +142,7 @@ All the calculators have the same initial steps:
 
 7. **Simplify:** Building this took a lot of iterations and more time than I would have liked as an intermediate step but it did turn out great so here's how it works. first of all, the problem was that `*` and `+` are associative, so to simplify all of the plain numbers lying nested deep inside `*` and `+` chains, we needed some kind of way to flatten the node to get rid of all the nesting which would get all the numbers in a single pass, which then could be merged at the same level. next, after we have everything as a flat list and not as a nested mess, we can decide how to merge them. For this, I went through many iterations and decided on a common structure of (coefficient, base, exponent) for each term. We take the flat list and turn each of it's items into this form. After that we can simply handle the algebra of merging in `marge_terms` by matching cases as per the operator. For example `(2.0, None, None)` and `(3.0, None, None)` would be merged as `(6.0, None, None)` for `op = '*'`. After that we can simply form the node for each term that is returned by `merged_term` and then finally combine all those terms back as a nested operator structure. But, you would think that if we are flattening by operator and we have something like:
 
-`('*', '2', ('*', ('+', 'x', '0'), '1'))` then we would get the flattened list as `['2', ('+', 'x', '0'), '1']` and when we go down the whole simplification pipeline then the `('+', 'x', '0')` would never get simplified to `x` and we will get an unsimplified result: `('*', '2', ('+', 'x', '0'))` whereas, the required result is `('*', '2', 'x')` and you would be completely correct. Which is why, there is the main top level function `simplify_initial` that is responsible for the whole breaking the node and recursing and it is the one that calls the whole `flatten -> form_terms -> merge_terms -> form_node -> rebuild` pipeline and due to recursion, the `('+', 'x', '0')` node gets simplified individually in a recursive call before it is ever available for the `*` node call. I highly recommend checking out [recursion tests 4](tests/recursion_test_4.txt) and [5](tests/recursion_test_5.txt) to get a better understanding of what I mean.
+    `('*', '2', ('*', ('+', 'x', '0'), '1'))` then we would get the flattened list as `['2', ('+', 'x', '0'), '1']` and when we go down the whole simplification pipeline then the `('+', 'x', '0')` would never get simplified to `x` and we will get an unsimplified result: `('*', '2', ('+', 'x', '0'))` whereas, the required result is `('*', '2', 'x')` and you would be completely correct. Which is why, there is the main top level function `simplify_initial` that is responsible for the whole breaking the node and recursing and it is the one that calls the whole `flatten -> form_terms -> merge_terms -> form_node -> rebuild` pipeline and due to recursion, the `('+', 'x', '0')` node gets simplified individually in a recursive call before it is ever available for the `*` node call. I highly recommend checking out [recursion tests 4](tests/recursion_test_4.txt) and [5](tests/recursion_test_5.txt) to get a better understanding of what I mean.
 
 8. **Range Calculator:** For this calculator, instead of sampling the function directly, we differentiate it first, find the critical points of the derivative (where the slope changes sign), and evaluate the original function only at those points plus the domain boundaries. That turns range-finding into "evaluate at a handful of meaningful points and stitch the pieces together" instead of dense brute-force sampling.
 
