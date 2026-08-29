@@ -159,3 +159,5 @@ All the calculators have the same initial steps:
 - Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.
 
 - Derivative does not support Greatest Integer `[]` and Fractional Part `{}` functions.
+
+- Euler's number `e` is not supported as a constant. it will be treated as a regular variable, not `math.e`. Use a decimal approximation (e.g. `2.71828^x`) if you need this behavior.
