@@ -46,6 +46,7 @@
             <li>Boundary limits at infinity or open endpoints are estimated numerically, not derived symbolically.</li>
             <li>Derivative does not support Greatest Integer <code>[]</code> and Fractional Part <code>{}</code>
                 functions.</li>
+            <li>Euler's number <code>e</code> is not supported as a constant. it will be treated as a regular variable, not <code>math.e</code>. Use a decimal approximation (e.g. <code>2.71828^x</code>) if you need this behavior.</li>
         </ul>
     </div>
 </section>
